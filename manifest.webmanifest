@@ -1,0 +1,18 @@
+{
+  "name": "גלגול צבעים",
+  "short_name": "גלגול צבעים",
+  "description": "משחק צבעים: מתגלגלים, מצביעים ומשלימים את הציור",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#5b4bdb",
+  "theme_color": "#5b4bdb",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
