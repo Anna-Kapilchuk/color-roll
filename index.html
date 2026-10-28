@@ -1031,12 +1031,13 @@ function coinsFor(stars,n,timed){
 const gemsFor=n=>n%10===0?3:n%5===0?2:1;
 const dayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 function shopState(){const t=dayStr();if(!save.shop||save.shop.day!==t){save.shop={day:t,bought:{reveal:0,slow:0,brush:0}};persist()}return save.shop}
+const ownsSkin=id=>save.skins.includes(id)||!!save.preview; // preview mode: every ball can be tried
 function normalizeSave(){
   save.coins=Math.max(0,+save.coins||0);save.gems=Math.max(0,+save.gems||0);
   save.pvp=Object.assign({w:0,l:0},save.pvp||{});
   save.skins=(Array.isArray(save.skins)?save.skins:[]).filter(id=>SK[id]);
   if(!save.skins.includes('candy'))save.skins.unshift('candy');
-  if(!SK[save.skin]||!save.skins.includes(save.skin))save.skin='candy';
+  if(!SK[save.skin]||!ownsSkin(save.skin))save.skin='candy';
   if(!save.shop||!save.shop.bought)save.shop={day:'',bought:{reveal:0,slow:0,brush:0}};
   save.tab=['home','levels','pvp','shop'].includes(save.tab)?save.tab:'home';
   save.stab=['chests','skins','power'].includes(save.stab)?save.stab:'chests';
@@ -1104,7 +1105,7 @@ function buyPower(k){
   return true;
 }
 function equipSkin(id){
-  if(!save.skins.includes(id)){toast('כדור זה נמצא בתיבות, אפשר לקנות תיבה בחנות');return}
+  if(!ownsSkin(id)){toast('כדור זה נמצא בתיבות, אפשר לקנות תיבה בחנות');return}
   save.skin=id;persist();sfx.click();renderShop();renderIcons();
 }
 function renderShop(){
@@ -1117,9 +1118,9 @@ function renderShop(){
       <div class="chest premium">${CHEST_PREM}<div><h3>תיבת קריסטל</h3><p>כדור נדיר או אפי, מובטח.</p><div class="odds"><i class="t-rare">נדיר 70%</i><i class="t-epic">אפי 30%</i></div><button class="buy gem${save.gems<CHEST_GEMS||allOwned?' off':''}" data-chest="premium" type="button">${GEM}${CHEST_GEMS}</button></div></div>
     </div><p class="shop-note">מטבעות מקבלים על כל ניצחון, ויהלום על שלושה כוכבים.</p>`;
   }else if(save.stab==='skins'){
-    h+=`<p class="shop-note">הכדור שתבחרו יחליף את כל הכדורים, בכל הצבעים.</p><div class="skgrid">`;
+    h+=`<p class="shop-note">הכדור שתבחרו יחליף את כל הכדורים, בכל הצבעים.</p><div class="setrow"><span>תצוגה: כל הכדורים פתוחים</span><button class="btn small" data-preview type="button">${save.preview?'פועל':'כבוי'}</button></div><div class="skgrid">`;
     for(const id of SKIN_IDS){
-      const sk=SK[id],own=save.skins.includes(id);
+      const sk=SK[id],own=ownsSkin(id);
       h+=`<button class="sk${save.skin===id?' on':''}${own?'':' locked'}" data-sk="${id}" type="button" aria-label="${sk.name}${own?'':', נעול'}"><img class="skimg" src="art/s_${id}.webp" alt="" draggable="false"><b>${sk.name}</b><small class="t-${sk.tier}">${TIER_NAME[sk.tier]}</small>${own?(save.skin===id?'<span class="eq">נבחר</span>':''):`<span class="lock">${LOCK}</span>`}</button>`;
     }
     h+='</div>';
@@ -1135,8 +1136,9 @@ function renderShop(){
   el.shopBody.innerHTML=h;
 }
 el.shopBody.addEventListener('click',e=>{
-  const c=e.target.closest('[data-chest]'),s=e.target.closest('[data-sk]'),p=e.target.closest('[data-pw]');
-  if(c)buyChest(c.dataset.chest);else if(s)equipSkin(s.dataset.sk);else if(p)buyPower(p.dataset.pw);
+  const c=e.target.closest('[data-chest]'),s=e.target.closest('[data-sk]'),p=e.target.closest('[data-pw]'),v=e.target.closest('[data-preview]');
+  if(v){save.preview=!save.preview;normalizeSave();persist();sfx.click();renderShop();renderIcons();toast(save.preview?'כל הכדורים פתוחים לניסיון':'חזרה לכדורים שאספתם')}
+  else if(c)buyChest(c.dataset.chest);else if(s)equipSkin(s.dataset.sk);else if(p)buyPower(p.dataset.pw);
 });
 el.stabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;sfx.click();save.stab=b.dataset.st;persist();renderShop()});
 
@@ -2029,7 +2031,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-10-28.1'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-10-28.3'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
