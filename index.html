@@ -1184,14 +1184,19 @@ const SIDEBTNS=[
   {go:'timed',label:'שעון',img:'i_timer',side:'R'}
 ];
 /* round 3D buttons on both sides of the home screen, each with a yellow ribbon */
+let homeSkin='';
 function buildHomeBalls(){
-  const cols=['red','blue','yellow','green','pink','orange','purple'];
-  el.secHome.querySelector('#homeballs').innerHTML=cols.map((c,i)=>`<g><animateMotion dur="22s" begin="-${(i*22/cols.length).toFixed(1)}s" repeatCount="indefinite" rotate="0"><mpath href="#hpath"/></animateMotion><ellipse cx="0" cy="17" rx="13" ry="4" fill="#000" opacity=".18"/><image href="art/b_${c}.webp" x="-17" y="-17" width="34" height="34"/></g>`).join('');
+  const sk=SK[save.skin]?save.skin:'candy',cols=[K.red,K.sky,K.yellow,K.green,K.pink,K.orange,K.purple];homeSkin=save.skin;
+  el.secHome.querySelector('#homeballs').innerHTML=cols.map((c,i)=>{
+    // the ball is drawn like the ones on the track, with ids made unique for this page
+    let g=`<defs>${BALL_DEFS}${SK[sk].defs(c,skinKey(sk,c))}</defs><g transform="scale(.86)">${SK[sk].body(c,skinKey(sk,c))}</g>`;
+    [...new Set([...g.matchAll(/id="([^"]+)"/g)].map(m=>m[1]))].forEach(id=>{g=g.split(`id="${id}"`).join(`id="hb${i}_${id}"`).split(`url(#${id})`).join(`url(#hb${i}_${id})`)});
+    return `<g><animateMotion dur="22s" begin="-${(i*22/cols.length).toFixed(1)}s" repeatCount="indefinite" rotate="0"><mpath href="#hpath"/></animateMotion><ellipse cx="0" cy="17" rx="13" ry="4" fill="#000" opacity=".18"/>${g}</g>`;
+  }).join('');
 }
 function renderIcons(){
   for(const sd of ['L','R'])el['side'+sd].innerHTML=SIDEBTNS.filter(b=>b.side===sd).map(b=>`<button type="button" class="sb" data-go="${b.go}" aria-label="${b.label}"><span class="orb">${IMG(b.img,'oi')}</span><span class="rib">${b.label}</span></button>`).join('');
 }
-buildHomeBalls();
 function goSide(go){
   if(go==='pvp')showTab('pvp');
   else if(go==='levels'){setMode('c');showTab('levels')}
@@ -1202,6 +1207,7 @@ for(const sd of ['sideL','sideR'])el[sd].addEventListener('click',e=>{const b=e.
 /* the next level, framed, in the middle of the home screen */
 let homeSeq=0;
 async function renderHome(){
+  if(homeSkin!==save.skin)buildHomeBalls();
   const id=++homeSeq,m=save.mode,nx=nextOpen(m),def=levelDef(m,nx),st=stk(m)[nx]||0;
   el.homeBadge.textContent=`${m==='t'?'שעון':'שלב'} ${nx}`;
   el.homeKind.hidden=!def.kind;el.homeKind.textContent=def.kind?KIND_NAME[def.kind]:'';el.homeKind.className='kindb '+def.kind;
@@ -2031,7 +2037,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-10-28.4'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-10-28.5'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
