@@ -663,18 +663,15 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
           <linearGradient id="hsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe3df"/><stop offset=".42" stop-color="#eef0dc"/><stop offset=".7" stop-color="#f6e8cc"/><stop offset="1" stop-color="#f3dcb8"/></linearGradient>
           <linearGradient id="hroad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ecd9ae"/><stop offset="1" stop-color="#dcc28c"/></linearGradient>
           <path id="hpath" d="M-40 790C90 735 40 640 160 600S330 520 250 440S300 330 430 290"/>
+          <filter id="hblur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.2"/></filter>
         </defs>
-        <rect width="390" height="844" fill="url(#hsky)"/>
-        <g fill="#fffaf0" opacity=".85"><ellipse cx="70" cy="150" rx="52" ry="16"/><ellipse cx="104" cy="138" rx="34" ry="18"/><ellipse cx="318" cy="120" rx="58" ry="17"/><ellipse cx="288" cy="108" rx="30" ry="16"/><ellipse cx="330" cy="300" rx="42" ry="12" opacity=".7"/></g>
-        <path d="M0 470C60 430 120 440 180 462S300 440 390 410V844H0Z" fill="#c9d9bd"/>
-        <path d="M0 540C80 500 150 520 220 540S330 520 390 500V844H0Z" fill="#b2cba4"/>
-        <path d="M0 640C70 590 140 600 200 625S330 610 390 585V844H0Z" fill="#98ba8b"/>
-        <path d="M0 700C90 660 150 690 230 700S340 690 390 670V844H0Z" fill="#7fa675"/>
-        <g><ellipse cx="42" cy="640" rx="22" ry="26" fill="#6f9a68"/><rect x="40" y="655" width="4" height="14" fill="#8a6a4a"/><ellipse cx="352" cy="545" rx="18" ry="22" fill="#6f9a68"/><rect x="350" y="558" width="4" height="12" fill="#8a6a4a"/><ellipse cx="318" cy="735" rx="26" ry="30" fill="#628f5c"/><rect x="316" y="752" width="5" height="16" fill="#7d5d3f"/><ellipse cx="70" cy="760" rx="20" ry="24" fill="#628f5c"/><rect x="68" y="774" width="4" height="12" fill="#7d5d3f"/></g>
-        <g fill="#e8a08a"><circle cx="120" cy="740" r="3.5"/><circle cx="140" cy="755" r="3"/><circle cx="260" cy="720" r="3.5"/><circle cx="215" cy="765" r="3"/></g><g fill="#f3c969"><circle cx="95" cy="725" r="3"/><circle cx="285" cy="760" r="3"/><circle cx="190" cy="735" r="2.8"/></g>
-        <use href="#hpath" stroke="#fff6df" stroke-opacity=".9" stroke-width="82" fill="none" stroke-linecap="round"/>
-        <use href="#hpath" stroke="url(#hroad)" stroke-width="72" fill="none" stroke-linecap="round"/>
-        <use href="#hpath" stroke="#fff7e2" stroke-opacity=".7" stroke-width="2.5" stroke-dasharray="10 14" fill="none"/>
+        <image href="art/home_bg.webp" x="0" y="0" width="390" height="844" preserveAspectRatio="xMidYMid slice"/>
+        <rect width="390" height="844" fill="#f3ead9" opacity=".08"/>
+        <use href="#hpath" stroke="#4a5a3a" stroke-opacity=".32" stroke-width="84" fill="none" stroke-linecap="round" transform="translate(0 7)" filter="url(#hblur)"/>
+        <use href="#hpath" stroke="#f6ecd0" stroke-width="80" fill="none" stroke-linecap="round"/>
+        <use href="#hpath" stroke="url(#hroad)" stroke-width="70" fill="none" stroke-linecap="round"/>
+        <use href="#hpath" stroke="#fff4d2" stroke-opacity=".55" stroke-width="46" fill="none" stroke-linecap="round" transform="translate(0 -3)" filter="url(#hblur)"/>
+        <use href="#hpath" stroke="#fff7e2" stroke-opacity=".6" stroke-width="2.5" stroke-dasharray="10 14" fill="none"/>
         <g id="homeballs"></g>
       </svg>
       <div class="stage" id="homeStage">
@@ -2033,7 +2030,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-10-28.6'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-10-28.7'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
