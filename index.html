@@ -651,6 +651,7 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
 .dock .dockmain{border:0;border-radius:20px;padding:17px 10px;background:linear-gradient(180deg,#58aca6,#2f7873);color:#fffaf0;font:800 26px/1.1 var(--display);letter-spacing:.3px;-webkit-text-stroke:0;text-shadow:0 2px 0 rgba(20,70,65,.35);box-shadow:0 14px 24px -12px rgba(47,120,115,.85),inset 0 2px 0 rgba(255,255,255,.4),inset 0 -4px 0 rgba(20,70,65,.18)}
 .dock .dockmain:active{transform:scale(.98);box-shadow:0 6px 12px -8px rgba(47,120,115,.8),inset 0 2px 0 rgba(255,255,255,.4)}
 @media (max-height:520px){.dock .dockmain{font-size:20px;padding:9px 10px}}
+.updbar{position:absolute;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:60;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 14px;border-radius:18px;background:var(--surf);color:var(--ink);font-weight:800;box-shadow:0 0 0 2px var(--sun),0 14px 24px -12px rgba(90,66,30,.7)}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1260,12 +1261,14 @@ function openProfile(){
     <p class="shop-note">${since?`מצטרפים מ-${since}. `:''}ההתקדמות נשמרת במכשיר הזה.</p>
     <button class="btn small gbtn" id="pGoogle" type="button" disabled>התחברות עם Google<small>בקרוב</small></button>
     <div class="setrow"><span>הגדרות</span><button class="btn small" id="stSound" type="button"></button></div>
+    <div class="setrow"><span>גרסה ${BUILD==='dev'?'לבדיקות':BUILD}</span><button class="btn small" id="stUpd" type="button">בדיקת עדכון</button></div>
     <div class="row"><button class="btn primary" id="pDone" type="button">שמירה</button></div>`);
   const paint=()=>{const v=document.getElementById('pvAv');v.style.background=st.av;v.innerHTML=avInner(st.pic,document.getElementById('pName').value||p.name)};
   bindAvatarPicker(d=>{Object.assign(st,d);paint()});
   document.getElementById('pName').addEventListener('input',paint);
   const upd=()=>{document.getElementById('stSound').textContent=save.sound?'צליל: פועל':'צליל: כבוי'};upd();
   document.getElementById('stSound').onclick=()=>{toggleSound();upd()};
+  document.getElementById('stUpd').onclick=()=>checkUpdate(true);
   document.getElementById('pClose').onclick=()=>{sfx.click();closeModal()};
   document.getElementById('pDone').onclick=()=>{sfx.click();saveProfile(document.getElementById('pName').value,st.av,st.pic);closeModal()};
 }
@@ -2025,6 +2028,33 @@ function frame(ts){
   update(dt);
 }
 
+/* installable app: only on the real web host (not inside Claude, not in local tests) */
+const BUILD='2026-10-28.1'; // stamped by tools/release.py, must match version.json on the host
+const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
+try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
+/* over-the-air updates: the host's version.json says which build is current */
+async function newerBuild(){
+  try{const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return null;const v=(await r.json()).v;return v&&v!==BUILD?v:false}catch(e){return null}
+}
+async function applyUpdate(){
+  try{const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}catch(e){}
+  try{const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.update()))}catch(e){}
+  location.reload();
+}
+function showUpdateBar(){
+  if(document.getElementById('updBar'))return;
+  const b=document.createElement('div');b.id='updBar';b.className='updbar';
+  b.innerHTML='<span>יש גרסה חדשה של המשחק</span><button type="button" class="btn small primary">עדכון</button>';
+  b.querySelector('button').onclick=()=>{b.querySelector('span').textContent='מעדכנת…';applyUpdate()};
+  document.getElementById('app').appendChild(b);
+}
+async function checkUpdate(manual){
+  if(!LIVE){if(manual)toast('עדכונים עובדים רק באפליקציה המותקנת');return}
+  const v=await newerBuild();
+  if(v)showUpdateBar();else if(manual)toast(v===null?'אין חיבור לאינטרנט':'המשחק מעודכן ✓');
+}
+if(LIVE){setTimeout(()=>checkUpdate(),2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setInterval(()=>checkUpdate(),15*60*1000)}
+
 /* ================= boot ================= */
 normalizeSave();renderMenu();showTab('home');showScreen('menu');startProfile();
 ['coin','gem','star','star_off','heart','heart_off','i_gear','i_battle','i_balls','i_potion','i_levels','i_timer','chest_basic','chest_crystal','chest_basic_open','chest_crystal_open','p_reveal','p_slow','p_brush','b_red','b_blue','b_yellow','b_green','b_pink','b_orange','b_purple'].forEach(n=>{const i=new Image();i.src='art/'+n+'.webp'}); // warm the cache
@@ -2048,6 +2078,4 @@ window.__cr={G,save,needed,renderTop,renderHome,goSide,openSettings,openProfile,
     }
   }};
 })();
-/* installable app: only on the real web host (not inside Claude, not in local tests) */
-try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 </script>
