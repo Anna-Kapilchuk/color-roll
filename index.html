@@ -663,6 +663,7 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
           <linearGradient id="hsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe3df"/><stop offset=".42" stop-color="#eef0dc"/><stop offset=".7" stop-color="#f6e8cc"/><stop offset="1" stop-color="#f3dcb8"/></linearGradient>
           <linearGradient id="hroad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ecd9ae"/><stop offset="1" stop-color="#dcc28c"/></linearGradient>
           <path id="hpath" d="M-40 790C90 735 40 640 160 600S330 520 250 440S300 330 430 290"/>
+          <radialGradient id="hbsh" cx=".36" cy=".3" r=".85"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></radialGradient>
           <filter id="hblur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.2"/></filter>
         </defs>
         <image href="art/home_bg.webp" x="0" y="0" width="390" height="844" preserveAspectRatio="xMidYMid slice"/>
@@ -1185,7 +1186,7 @@ let homeSkin='';
 /* the balls that roll along the home road are the real ball pictures of the chosen skin (red, blue and green of the sheet) */
 function buildHomeBalls(){
   const sk=SK[save.skin]?save.skin:'candy',order=[0,1,2,0,2,1,0];homeSkin=save.skin;
-  el.secHome.querySelector('#homeballs').innerHTML=order.map((k,i)=>`<g><animateMotion dur="22s" begin="-${(i*22/order.length).toFixed(1)}s" repeatCount="indefinite" rotate="0"><mpath href="#hpath"/></animateMotion><ellipse cx="0" cy="17" rx="13" ry="4" fill="#000" opacity=".18"/><svg x="-20" y="-20" width="40" height="40" viewBox="${k*300} 8 300 300"><image href="art/s_${sk}.webp" width="900" height="317"/></svg></g>`).join('');
+  el.secHome.querySelector('#homeballs').innerHTML=order.map((k,i)=>`<g><animateMotion dur="22s" begin="-${(i*22/order.length).toFixed(1)}s" repeatCount="indefinite" rotate="0"><mpath href="#hpath"/></animateMotion><ellipse cx="0" cy="17" rx="13" ry="4" fill="#000" opacity=".18"/><g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="${i%2?-360:360} 0 0" dur="${(3.4+i*.27).toFixed(2)}s" repeatCount="indefinite"/><svg x="-20" y="-20" width="40" height="40" viewBox="${k*300} 8 300 300"><image href="art/s_${sk}.webp" width="900" height="317"/></svg></g><circle r="18" fill="url(#hbsh)"/></g>`).join('');
 }
 function renderIcons(){
   for(const sd of ['L','R'])el['side'+sd].innerHTML=SIDEBTNS.filter(b=>b.side===sd).map(b=>`<button type="button" class="sb" data-go="${b.go}" aria-label="${b.label}"><span class="orb">${IMG(b.img,'oi')}</span><span class="rib">${b.label}</span></button>`).join('');
@@ -2030,7 +2031,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-10-28.7'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-10-28.8'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */

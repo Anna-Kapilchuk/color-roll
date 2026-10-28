@@ -1,5 +1,5 @@
 /* network first (always revalidated), falls back to the cache when offline; tools/release.py bumps V */
-const V = 'cr-2026-10-28.7';
+const V = 'cr-2026-10-28.8';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
