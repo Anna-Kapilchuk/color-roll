@@ -668,11 +668,7 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
         </defs>
         <image href="art/home_bg.webp" x="0" y="0" width="390" height="844" preserveAspectRatio="xMidYMid slice"/>
         <rect width="390" height="844" fill="#f3ead9" opacity=".08"/>
-        <use href="#hpath" stroke="#4a5a3a" stroke-opacity=".32" stroke-width="84" fill="none" stroke-linecap="round" transform="translate(0 7)" filter="url(#hblur)"/>
-        <use href="#hpath" stroke="#f6ecd0" stroke-width="80" fill="none" stroke-linecap="round"/>
-        <use href="#hpath" stroke="url(#hroad)" stroke-width="70" fill="none" stroke-linecap="round"/>
-        <use href="#hpath" stroke="#fff4d2" stroke-opacity=".55" stroke-width="46" fill="none" stroke-linecap="round" transform="translate(0 -3)" filter="url(#hblur)"/>
-        <use href="#hpath" stroke="#fff7e2" stroke-opacity=".6" stroke-width="2.5" stroke-dasharray="10 14" fill="none"/>
+        <image href="art/home_road.webp" x="0" y="0" width="390" height="844"/>
         <g id="homeballs"></g>
       </svg>
       <div class="stage" id="homeStage">
@@ -2031,7 +2027,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-10-28.8'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-10-28.9'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
