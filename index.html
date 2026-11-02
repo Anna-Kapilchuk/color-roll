@@ -1607,14 +1607,14 @@ function brush(){
 function needed(color){const i=G.colors.get(color);return !!(i&&i.rem>0)}
 
 /* ---------- track + balls ---------- */
-/* where the road lives: in portrait it covers everything from the top of the picture to the bottom of the screen, so the shapes
+/* where the road lives: in portrait it takes everything from just under the picture to the bottom of the screen, so the shapes
    (drawn for 400x260) are stretched vertically to fit; on a short landscape screen the old panel is kept */
 function layoutTrack(){
   const wr=el.gwrap,tw=el.trackwrap,ov=!SIDE();
   wr.classList.toggle('ov',ov);G.th=260;G.tk=1;el.track.setAttribute('viewBox','0 0 400 260');
   if(!ov){tw.style.top='';el.powers.style.top='';return}
   const a=wr.getBoundingClientRect(),pic=wr.querySelector('.pic').getBoundingClientRect(),card=el.card.getBoundingClientRect();
-  tw.style.top=Math.max(0,pic.top-a.top)+'px';
+  tw.style.top=Math.max(0,card.bottom-a.top+10)+'px'; // the road never covers the picture: it takes the rest of the screen below it
   el.powers.style.top=Math.max(0,card.top-a.top+card.height/2-90)+'px';
   const r=tw.getBoundingClientRect();if(r.width<50||r.height<50)return;
   const H=400*r.height/r.width;G.th=+H.toFixed(1);G.tk=Math.min(2.3,Math.max(1,H/260));
@@ -2219,7 +2219,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-11-02.6'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-11-02.7'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
