@@ -673,6 +673,16 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
 @media (orientation:portrait),(min-height:721px){
   .trackwrap{width:calc(100% + max(16px,env(safe-area-inset-left,0px)) + max(16px,env(safe-area-inset-right,0px)));margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)))}
 }
+/* portrait: the road of balls spreads over the whole play area, on top of the picture; the power-ups become round marks at the side */
+#gwrap.ov .trackwrap{position:absolute;left:calc(-1*max(16px,env(safe-area-inset-left,0px)));right:calc(-1*max(16px,env(safe-area-inset-right,0px)));bottom:-12px;width:auto;height:auto;aspect-ratio:auto;max-width:none;margin:0;z-index:3;align-self:auto}
+#gwrap.ov .pic{margin-right:62px;place-items:start center}
+#gwrap.ov .powers{position:absolute;right:0;z-index:6;display:flex;flex-direction:column;gap:12px;width:54px}
+#gwrap.ov .pw{width:54px;height:54px;padding:0;border-radius:50%;display:grid;place-items:center;grid-template-columns:1fr;overflow:visible}
+#gwrap.ov .pw .nm{display:none}
+#gwrap.ov .pw .ic{width:42px;height:42px}
+#gwrap.ov .pw .ic img,#gwrap.ov .pw .ic svg{width:38px;height:38px}
+#gwrap.ov .pw i{border-radius:50%;transform-origin:center}
+#gwrap.ov .pw em{top:-4px;inset-inline-end:-4px;min-width:22px;height:22px;padding:0 5px;border-radius:99px;font-size:12px;line-height:22px;background:#2a2f66;box-shadow:0 0 0 2px #fff}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1375,7 +1385,7 @@ function toggleSound(){save.sound=!save.sound;persist();renderSound();if(save.so
 el.soundBtn.onclick=toggleSound;el.soundBtn2.onclick=toggleSound;
 
 /* ================= game state ================= */
-const G={state:'menu',mode:'c',n:1,lvl:null,pic:null,balls:[],parts:[],regs:[],colors:new Map(),track:null,lives:3,maxLives:3,score:0,combo:0,maxCombo:0,remaining:0,total:0,spawnAcc:0,sinceNeed:0,spacing:60,lastColor:null,cleared:false,mistakes:0,t:0,fx:{reveal:0,slow:0,freeze:0,turbo:0,fog:0,lock:0},limit:0,time:0,clockAt:0,loadId:0,paintLog:[],sinceTrap:0,nTrap:0,trapsHit:0,trapType:null,fxSig:0,introSec:0};
+const G={state:'menu',mode:'c',n:1,lvl:null,pic:null,balls:[],parts:[],regs:[],colors:new Map(),track:null,lives:3,maxLives:3,score:0,combo:0,maxCombo:0,remaining:0,total:0,spawnAcc:0,sinceNeed:0,spacing:60,lastColor:null,cleared:false,mistakes:0,t:0,fx:{reveal:0,slow:0,freeze:0,turbo:0,fog:0,lock:0},limit:0,time:0,clockAt:0,loadId:0,paintLog:[],sinceTrap:0,nTrap:0,trapsHit:0,trapType:null,fxSig:0,introSec:0,th:260,tk:1};
 const tweens=[];
 const tween=(dur,fn,done)=>tweens.push({t:0,dur,fn,done});
 const after=(sec,done)=>tweens.push({t:0,dur:sec,fn:null,done});
@@ -1416,7 +1426,7 @@ async function startLevel(mode,n,opp){
   }
   if(id!==G.loadId)return;
   G.pic=pic;L.pool=makePool([...new Set(pic.regions.map(r=>r.c))],L.minDist,L.d);
-  buildArt(pic,L);buildChips();buildTrack(L);buildPowers();
+  buildArt(pic,L);buildChips();buildPowers();layoutTrack();buildTrack(L);
   if(L.clock){
     // the stream of useful balls sets the fastest possible pace (refTime). Clock levels leave 1.7x down to 1.4x of it, regular levels a wider
     // margin (1.95x down to 1.5x, and a few extra seconds for the traps), so a regular level is never a race but can still be lost to a long dither
@@ -1597,14 +1607,28 @@ function brush(){
 function needed(color){const i=G.colors.get(color);return !!(i&&i.rem>0)}
 
 /* ---------- track + balls ---------- */
+/* where the road lives: in portrait it covers everything from the top of the picture to the bottom of the screen, so the shapes
+   (drawn for 400x260) are stretched vertically to fit; on a short landscape screen the old panel is kept */
+function layoutTrack(){
+  const wr=el.gwrap,tw=el.trackwrap,ov=!SIDE();
+  wr.classList.toggle('ov',ov);G.th=260;G.tk=1;el.track.setAttribute('viewBox','0 0 400 260');
+  if(!ov){tw.style.top='';el.powers.style.top='';return}
+  const a=wr.getBoundingClientRect(),pic=wr.querySelector('.pic').getBoundingClientRect(),card=el.card.getBoundingClientRect();
+  tw.style.top=Math.max(0,pic.top-a.top)+'px';
+  el.powers.style.top=Math.max(0,card.top-a.top+card.height/2-90)+'px';
+  const r=tw.getBoundingClientRect();if(r.width<50||r.height<50)return;
+  const H=400*r.height/r.width;G.th=+H.toFixed(1);G.tk=Math.min(2.3,Math.max(1,H/260));
+  el.track.setAttribute('viewBox',`0 0 400 ${G.th}`);
+}
 function buildTrack(L){
-  const T=makeTrack(TRACKS[L.track]());G.track=T;G.spacing=2*BR+L.gap;
+  const T=makeTrack(TRACKS[L.track]().map(q=>[q[0],G.th/2+(q[1]-130)*G.tk]));G.track=T;G.spacing=2*BR+L.gap;
   const svg=el.track;
   svg.innerHTML=`<defs>${BALL_DEFS}
     <radialGradient id="hole"><stop offset="0" stop-color="#05061a"/><stop offset=".7" stop-color="#0b0d2b"/><stop offset="1" stop-color="#1c2058"/></radialGradient></defs>
-    <path d="${T.d}" fill="none" stroke="#8c9bff" stroke-opacity=".16" stroke-width="${2*BR+14}" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="${T.d}" fill="none" stroke="#080a24" stroke-width="${2*BR+6}" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="flow" d="${T.d}" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 15" style="--fd:${(16/L.speed).toFixed(3)}s"/>
+    <path d="${T.d}" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="${2*BR+13}" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${T.d}" fill="none" stroke="#141a48" stroke-opacity=".52" stroke-width="${2*BR+6}" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${T.d}" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="${BR}" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 -4)"/>
+    <path class="flow" d="${T.d}" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 15" style="--fd:${(16/L.speed).toFixed(3)}s"/>
     ${T.inside?`<circle cx="${T.end[0]}" cy="${T.end[1]}" r="${BR+6}" fill="url(#hole)" stroke="#3a3f8f" stroke-width="3"/>`:''}
     <g id="ballLayer"></g>`;
   G.layer=svg.querySelector('#ballLayer');G.grads=new Set();
@@ -1923,7 +1947,7 @@ function ballAt(cx,cy){
   let best=null,bd=BR*1.5;
   for(const b of G.balls){
     if(b.dead)continue;const p=G.track.at(b.d);
-    if(p.x<8||p.x>392||p.y<0||p.y>260)continue;
+    if(p.x<8||p.x>392||p.y<0||p.y>G.th)continue;
     const d=Math.hypot(p.x-pt.x,p.y-pt.y);if(d<bd){bd=d;best=b}
   }
   return best;
@@ -2195,7 +2219,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-11-02.5'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-11-02.6'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
