@@ -1115,7 +1115,7 @@ function renderShop(){
   const allOwned=SKIN_IDS.every(id=>save.skins.includes(id)),left=SKIN_IDS.length-save.skins.length;
   let h=`<h2 class="ptitle">${{chests:'תיבות',skins:'הכדורים שלכם',power:'כלי עזר'}[save.stab]}</h2>`;
   if(save.stab==='chests'){
-    h+=`<p class="shop-note">${allOwned?'אספתם את כל 20 הכדורים!':`נותרו ${left} כדורים לגלות מתוך ${SKIN_IDS.length}`}</p><div class="chests">
+    h+=`<p class="shop-note">${allOwned?`אספתם את כל ${SKIN_IDS.length} הכדורים!`:`נותרו ${left} כדורים לגלות מתוך ${SKIN_IDS.length}`}</p><div class="chests">
       <div class="chest basic">${CHEST_BASIC}<div><h3>תיבת כדורים</h3><p>כדור אחד חדש, באקראי. הכדור מחליף את כל הכדורים במשחק.</p><div class="odds"><i class="t-common">רגיל 60%</i><i class="t-rare">נדיר 30%</i><i class="t-epic">אפי 10%</i></div><button class="buy${save.coins<CHEST_COINS||allOwned?' off':''}" data-chest="basic" type="button">${COIN}${CHEST_COINS}</button></div></div>
       <div class="chest premium">${CHEST_PREM}<div><h3>תיבת קריסטל</h3><p>כדור נדיר או אפי, מובטח.</p><div class="odds"><i class="t-rare">נדיר 70%</i><i class="t-epic">אפי 30%</i></div><button class="buy gem${save.gems<CHEST_GEMS||allOwned?' off':''}" data-chest="premium" type="button">${GEM}${CHEST_GEMS}</button></div></div>
     </div><p class="shop-note">מטבעות מקבלים על כל ניצחון, ויהלום על שלושה כוכבים.</p>`;
@@ -1596,6 +1596,8 @@ const base=(i)=>`<circle r="${R}" fill="url(#${i})" ${RIM}/>`;
 const body3=c=>[[0,Lt(c,.42)],[.5,c],[1,Dk(c,.42)]];
 const star4=(x,y,s,f='#fff',o=.95)=>`<path d="M${x} ${y-s}Q${x+s*.18} ${y-s*.18} ${x+s} ${y}Q${x+s*.18} ${y+s*.18} ${x} ${y+s}Q${x-s*.18} ${y+s*.18} ${x-s} ${y}Q${x-s*.18} ${y-s*.18} ${x} ${y-s}Z" fill="${f}" fill-opacity="${o}"/>`;
 const spiral=(()=>{let d='';for(let t=0;t<=4*Math.PI*1.5;t+=.35){const r=1+t*1.55;d+=(d?'L':'M')+(r*Math.cos(t)).toFixed(1)+' '+(r*Math.sin(t)).toFixed(1)}return d})();
+const star5=(x,y,r,f)=>{let d='';for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,q=k%2?r*.45:r;d+=(k?'L':'M')+(x+q*Math.cos(a)).toFixed(1)+' '+(y+q*Math.sin(a)).toFixed(1)}return `<path d="${d}Z" fill="${f}" stroke-linejoin="round"/>`};
+const heart=(x,y,z,f)=>`<path transform="translate(${x} ${y}) scale(${z})" d="M0 4C-6 -1 -5 -6 -2.4 -6C-1 -6 0 -5 0 -4C0 -5 1 -6 2.4 -6C5 -6 6 -1 0 4Z" fill="${f}"/>`;
 const hex6=(s)=>{let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return h};
 
 SK.candy={name:'סוכריה',tier:'common',
@@ -1636,6 +1638,16 @@ SK.button={name:'כפתור',tier:'common',
   defs:(c,i)=>rg(i,[[0,Lt(c,.3)],[.6,c],[1,Dk(c,.3)]]),
   body:(c,i)=>`${base(i)}<circle r="14.5" fill="none" stroke="${Lt(c,.5)}" stroke-width="1.4"/><g class="roll"><circle cx="-4.6" cy="-4.6" r="2.3" fill="${Dk(c,.7)}"/><circle cx="4.6" cy="-4.6" r="2.3" fill="${Dk(c,.7)}"/><circle cx="-4.6" cy="4.6" r="2.3" fill="${Dk(c,.7)}"/><circle cx="4.6" cy="4.6" r="2.3" fill="${Dk(c,.7)}"/><path d="M-4.6 -4.6L4.6 4.6M4.6 -4.6L-4.6 4.6" stroke="#fff" stroke-opacity=".92" stroke-width="1.5" stroke-linecap="round"/></g>${SPH}${GL}`};
 
+SK.dots={name:'נקודות',tier:'common',
+  defs:(c,i)=>rg(i,body3(c)),
+  body:(c,i)=>{let d='';[[-9,-9,4.2],[8,-10,3.2],[-1,0,4.6],[12,3,3.4],[-13,5,3.2],[4,12,4],[-8,14,2.6],[16,-4,2.4]].forEach(([x,y,r])=>d+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${Lt(c,.78)}"/>`);
+    return `${base(i)}${clip(`<g class="roll">${d}</g>${SPH}`)}${GL}`}};
+
+SK.stripes={name:'פסים',tier:'common',
+  defs:(c,i)=>rg(i,body3(c)),
+  body:(c,i)=>{let d='';for(let k=-4;k<=4;k++)d+=`<rect x="${k*9-2.4}" y="-30" width="4.8" height="60" fill="${Lt(c,.78)}"/>`;
+    return `${base(i)}${clip(`<g class="roll"><g transform="rotate(35)">${d}</g></g>${SPH}`)}${GL}`}};
+
 SK.bubble={name:'בועה',tier:'rare',
   defs:(c,i)=>rg(i,[[0,'#fff',.1],[.62,c,.35],[1,c,.9]],.5,.5,.55),
   body:(c,i)=>`<circle r="${R}" fill="url(#${i})" stroke="${c}" stroke-width="2.4"/><circle r="${R-2.4}" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1"/>${clip(`<path class="roll" d="M-13 7A14 14 0 0 0 11 10" fill="none" stroke="#8fe9ff" stroke-opacity=".85" stroke-width="2.4" stroke-linecap="round"/><path d="M-10 11A14 14 0 0 0 7 14" fill="none" stroke="#ffb3e6" stroke-opacity=".8" stroke-width="2" stroke-linecap="round"/>`)}<ellipse cx="${-R*.38}" cy="${-R*.42}" rx="${R*.33}" ry="${R*.2}" transform="rotate(-38 ${-R*.38} ${-R*.42})" fill="#fff" fill-opacity=".95"/><circle cx="${R*.4}" cy="${R*.42}" r="1.7" fill="#fff" fill-opacity=".8"/>`};
@@ -1667,6 +1679,21 @@ SK.planet={name:'כוכב לכת',tier:'rare',
   defs:(c,i)=>rg(i,[[0,Lt(c,.4)],[.55,c],[1,Dk(c,.5)]]),
   body:(c,i)=>`<g transform="rotate(-20)"><ellipse rx="${R*1.32}" ry="${R*.4}" fill="none" stroke="${Lt(c,.55)}" stroke-width="3.2" stroke-opacity=".9"/></g>${base(i)}${clip(`<g class="roll"><rect x="-22" y="-11" width="44" height="4" fill="${Lt(c,.35)}" fill-opacity=".45"/><rect x="-22" y="3" width="44" height="5" fill="${Dk(c,.4)}" fill-opacity=".35"/><circle cx="7" cy="-4" r="3" fill="${Dk(c,.5)}" fill-opacity=".35"/><circle cx="-8" cy="9" r="2.2" fill="${Dk(c,.5)}" fill-opacity=".3"/></g>${SPH}`)}<g transform="rotate(-20)"><path d="M${-R*1.32} 0A${R*1.32} ${R*.4} 0 0 0 ${R*1.32} 0" fill="none" stroke="${Lt(c,.6)}" stroke-width="3.2"/></g>${GL}`};
 
+SK.stars={name:'כוכבים',tier:'rare',
+  defs:(c,i)=>rg(i,body3(c)),
+  body:(c,i)=>{let d='';[[-9,-8,4.6],[9,-10,3.4],[0,2,5],[12,5,3.6],[-12,8,3.4],[3,14,3.6],[-16,-1,2.6]].forEach(([x,y,r])=>d+=star5(x,y,r,Lt(c,.82)));
+    return `${base(i)}${clip(`<g class="roll">${d}</g>${SPH}`)}${GL}`}};
+
+SK.hearts={name:'לבבות',tier:'rare',
+  defs:(c,i)=>rg(i,body3(c)),
+  body:(c,i)=>{let d='';[[-9,-8,1.5],[9,-9,1.2],[0,3,1.7],[13,6,1.2],[-12,9,1.2],[3,15,1.3],[-17,-1,1]].forEach(([x,y,z])=>d+=heart(x,y,z,Lt(c,.82)));
+    return `${base(i)}${clip(`<g class="roll">${d}</g>${SPH}`)}${GL}`}};
+
+SK.flower={name:'פרח',tier:'rare',
+  defs:(c,i)=>rg(i,body3(c)),
+  body:(c,i)=>{const fl=(x,y,z)=>{let p='';for(let k=0;k<5;k++){const a=k*2*Math.PI/5;p+=`<circle cx="${(x+3.4*z*Math.cos(a)).toFixed(1)}" cy="${(y+3.4*z*Math.sin(a)).toFixed(1)}" r="${(2.3*z).toFixed(1)}" fill="#fff"/>`}return p+`<circle cx="${x}" cy="${y}" r="${(1.9*z).toFixed(1)}" fill="#ffd54a"/>`};
+    return `${base(i)}${clip(`<g class="roll">${fl(-8,-7,1.15)}${fl(9,-5,.9)}${fl(0,9,1.2)}${fl(-15,6,.8)}${fl(16,8,.8)}</g>${SPH}`)}${GL}`}};
+
 SK.glitter={name:'נוצץ',tier:'epic',
   defs:(c,i)=>rg(i,[[0,Lt(c,.55)],[.5,c],[1,Dk(c,.5)]]),
   body:(c,i)=>{let s='';const pos=[[-9,-7,4.2],[8,-9,3],[-3,4,3.6],[10,6,4.4],[-13,9,2.6],[1,-15,2.4],[14,-2,2.2],[-15,-3,2.8],[5,14,2.4]];
@@ -1690,9 +1717,9 @@ SK.neon={name:'ניאון',tier:'epic',
   defs:()=>'',
   body:(c)=>`<circle r="${R}" fill="#10123a"/><circle r="${R-1.5}" fill="none" stroke="${c}" stroke-opacity=".35" stroke-width="3.4"/><circle r="${R-4.2}" fill="${c}" fill-opacity=".16" stroke="${c}" stroke-width="3.8"/><circle r="${R-4.2}" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="1.1"/><circle r="4.2" fill="${c}" fill-opacity=".85"/><circle r="1.8" fill="#fff"/><g class="roll"><path d="M-12 -4A13 13 0 0 1 -4 -12" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="2" stroke-linecap="round"/><path d="M11 5A13 13 0 0 1 5 11" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2" stroke-linecap="round"/></g>`};
 
-SK.pearl={name:'פנינה',tier:'epic',
-  defs:(c,i)=>rg(i,[[0,'#fff'],[.38,Lt(c,.4)],[1,c]],.38,.32,.9),
-  body:(c,i)=>`${base(i)}${clip(`<g class="roll"><path d="M-16 9A17 17 0 0 0 14 11" fill="none" stroke="#ffd3f3" stroke-opacity=".7" stroke-width="3"/><path d="M-14 12A17 17 0 0 0 10 15" fill="none" stroke="#b9f1ff" stroke-opacity=".7" stroke-width="2.4"/></g>${SPH}`)}<ellipse cx="${-R*.36}" cy="${-R*.44}" rx="${R*.42}" ry="${R*.26}" transform="rotate(-38 ${-R*.36} ${-R*.44})" fill="#fff" fill-opacity=".9"/><circle cx="${R*.45}" cy="${R*.4}" r="1.6" fill="#fff" fill-opacity=".8"/>`};
+SK.smiley={name:'סמיילי',tier:'epic',
+  defs:(c,i)=>rg(i,[[0,Lt(c,.5)],[.55,c],[1,Dk(c,.35)]]),
+  body:(c,i)=>`${base(i)}${clip(`<g class="roll"><circle cx="-16" cy="12" r="1.6" fill="#fff" fill-opacity=".55"/><circle cx="17" cy="-10" r="1.4" fill="#fff" fill-opacity=".5"/></g>${SPH}`)}<ellipse cx="-6.5" cy="-4" rx="2.3" ry="3.3" fill="#2b2140"/><ellipse cx="6.5" cy="-4" rx="2.3" ry="3.3" fill="#2b2140"/><circle cx="-5.8" cy="-5.2" r=".9" fill="#fff"/><circle cx="7.2" cy="-5.2" r=".9" fill="#fff"/><path d="M-8 4.5Q0 13 8 4.5" fill="none" stroke="#2b2140" stroke-width="2.2" stroke-linecap="round"/><circle cx="-12.5" cy="4" r="2.2" fill="#ff8fb0" fill-opacity=".5"/><circle cx="12.5" cy="4" r="2.2" fill="#ff8fb0" fill-opacity=".5"/>${GL}`};
 
 const SKIN_IDS=Object.keys(SK);
 /* the pieces every ball shares: contact shadow, sphere shading, clip */
@@ -2035,7 +2062,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-11-02.1'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-11-02.2'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
