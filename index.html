@@ -1648,10 +1648,6 @@ SK.stripes={name:'פסים',tier:'common',
   body:(c,i)=>{let d='';for(let k=-4;k<=4;k++)d+=`<rect x="${k*9-2.4}" y="-30" width="4.8" height="60" fill="${Lt(c,.78)}"/>`;
     return `${base(i)}${clip(`<g class="roll"><g transform="rotate(35)">${d}</g></g>${SPH}`)}${GL}`}};
 
-SK.bubble={name:'בועה',tier:'rare',
-  defs:(c,i)=>rg(i,[[0,'#fff',.1],[.62,c,.35],[1,c,.9]],.5,.5,.55),
-  body:(c,i)=>`<circle r="${R}" fill="url(#${i})" stroke="${c}" stroke-width="2.4"/><circle r="${R-2.4}" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1"/>${clip(`<path class="roll" d="M-13 7A14 14 0 0 0 11 10" fill="none" stroke="#8fe9ff" stroke-opacity=".85" stroke-width="2.4" stroke-linecap="round"/><path d="M-10 11A14 14 0 0 0 7 14" fill="none" stroke="#ffb3e6" stroke-opacity=".8" stroke-width="2" stroke-linecap="round"/>`)}<ellipse cx="${-R*.38}" cy="${-R*.42}" rx="${R*.33}" ry="${R*.2}" transform="rotate(-38 ${-R*.38} ${-R*.42})" fill="#fff" fill-opacity=".95"/><circle cx="${R*.4}" cy="${R*.42}" r="1.7" fill="#fff" fill-opacity=".8"/>`};
-
 SK.donut={name:'סופגנייה',tier:'rare',
   defs:(c,i)=>rg(i,body3(c)),
   body:(c,i)=>{let sp='';const cols=['#fff',Lt(c,.8),Dk(c,.45)];for(let k=0;k<9;k++){const a=k*2*Math.PI/9+.3,x=12.5*Math.cos(a),y=12.5*Math.sin(a);sp+=`<rect x="-2.6" y="-.8" width="5.2" height="1.7" rx=".85" fill="${cols[k%3]}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(a*57.3+60).toFixed(0)})"/>`}
@@ -1716,6 +1712,10 @@ SK.disco={name:'כדור דיסקו',tier:'epic',
 SK.neon={name:'ניאון',tier:'epic',
   defs:()=>'',
   body:(c)=>`<circle r="${R}" fill="#10123a"/><circle r="${R-1.5}" fill="none" stroke="${c}" stroke-opacity=".35" stroke-width="3.4"/><circle r="${R-4.2}" fill="${c}" fill-opacity=".16" stroke="${c}" stroke-width="3.8"/><circle r="${R-4.2}" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="1.1"/><circle r="4.2" fill="${c}" fill-opacity=".85"/><circle r="1.8" fill="#fff"/><g class="roll"><path d="M-12 -4A13 13 0 0 1 -4 -12" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="2" stroke-linecap="round"/><path d="M11 5A13 13 0 0 1 5 11" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2" stroke-linecap="round"/></g>`};
+
+SK.pearl={name:'פנינה',tier:'epic',
+  defs:(c,i)=>rg(i,[[0,'#fff'],[.38,Lt(c,.4)],[1,c]],.38,.32,.9),
+  body:(c,i)=>`${base(i)}${clip(`<g class="roll"><path d="M-16 9A17 17 0 0 0 14 11" fill="none" stroke="#ffd3f3" stroke-opacity=".7" stroke-width="3"/><path d="M-14 12A17 17 0 0 0 10 15" fill="none" stroke="#b9f1ff" stroke-opacity=".7" stroke-width="2.4"/></g>${SPH}`)}<ellipse cx="${-R*.36}" cy="${-R*.44}" rx="${R*.42}" ry="${R*.26}" transform="rotate(-38 ${-R*.36} ${-R*.44})" fill="#fff" fill-opacity=".9"/><circle cx="${R*.45}" cy="${R*.4}" r="1.6" fill="#fff" fill-opacity=".8"/>`};
 
 SK.smiley={name:'סמיילי',tier:'epic',
   defs:(c,i)=>rg(i,[[0,Lt(c,.5)],[.55,c],[1,Dk(c,.35)]]),
@@ -2062,7 +2062,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-11-02.2'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-11-02.3'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
