@@ -683,6 +683,35 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
 #gwrap.ov .pw .ic img,#gwrap.ov .pw .ic svg{width:38px;height:38px}
 #gwrap.ov .pw i{border-radius:50%;transform-origin:center}
 #gwrap.ov .pw em{top:-4px;inset-inline-end:-4px;min-width:22px;height:22px;padding:0 5px;border-radius:99px;font-size:12px;line-height:22px;background:#2a2f66;box-shadow:0 0 0 2px #fff}
+.coach{position:absolute;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(40,34,26,.58)}
+.coach[hidden]{display:none}
+.cbox{width:min(100%,360px);background:var(--surf,#fff);color:var(--ink);border-radius:26px;padding:20px 18px 18px;text-align:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.6),0 0 0 1px var(--line)}
+.cbox h3{margin:0 0 6px;font:800 21px/1.2 var(--display)}
+.cbox p{margin:6px 0 10px;font:600 15px/1.45 var(--body);color:var(--ink-soft)}
+.cart{min-height:96px;display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.cart svg{display:block}
+.cdots{display:flex;gap:6px;justify-content:center;margin:2px 0 12px}
+.cdots i{width:8px;height:8px;border-radius:50%;background:rgba(90,66,30,.2)}
+.cdots i.on{background:var(--sun);width:22px;border-radius:99px}
+.cbox .btn{width:100%}
+.cball{position:relative;display:inline-block;animation:cpulse 1.1s ease-in-out infinite alternate}
+.cball .cmark{position:absolute;top:-6px;right:-8px}
+@keyframes cpulse{from{transform:scale(1)}to{transform:scale(1.1)}}
+.carrow{font:800 26px var(--display);color:var(--ink-soft)}
+.cfrost{position:relative;display:inline-grid;place-items:center;padding:12px 22px;border-radius:20px;background:rgba(200,230,255,.6);gap:2px}
+.cfrost b{font:800 26px var(--display)}
+.cgrid{display:inline-grid;grid-template-columns:repeat(2,22px);gap:4px}
+.cgrid i{height:22px;border-radius:6px;background:rgba(90,66,30,.15)}
+.cgrid i.on{background:#2dbe6c}
+.cspeed{display:inline-flex;gap:4px;background:repeating-linear-gradient(105deg,transparent 0 12px,rgba(255,120,80,.25) 12px 15px);padding:6px 10px;border-radius:16px}
+.cfog{display:inline-flex;gap:4px;filter:grayscale(1) blur(2px)}
+.clockpw{position:relative;width:52px;height:52px;display:grid;place-items:center;border-radius:50%;background:rgba(90,66,30,.14);filter:grayscale(1)}
+.clockpw img{width:38px;height:38px}
+.clockpw em{position:absolute;top:-4px;right:-4px;font-style:normal;font-size:15px}
+.cpw{display:grid;place-items:center;width:86px;height:86px;border-radius:50%;background:rgba(90,66,30,.1)}
+.cpw img{width:62px;height:62px}
+.cclock{font:800 34px var(--display);padding:12px 22px;border-radius:20px;background:rgba(90,66,30,.1)}
+.pw.later{filter:grayscale(1) brightness(.9);opacity:.55}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -849,7 +878,7 @@ const TOTAL_C=200,TOTAL_T=50,PER_PAGE=12;
 
 /* ================= storage ================= */
 const KEY='gilgul-tzeva.v1';
-let save={stars:{},tstars:{},best:{},tbest:{},sound:true,inv:{reveal:3,slow:3,brush:3},mode:'c',page:{c:0,t:0},skin:'candy',skins:['candy']};
+let save={seen:{},stars:{},tstars:{},best:{},tbest:{},sound:true,inv:{reveal:3,slow:3,brush:3},mode:'c',page:{c:0,t:0},skin:'candy',skins:['candy']};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');Object.assign(save,s);save.inv=Object.assign({reveal:3,slow:3,brush:3},s.inv||{});save.page=Object.assign({c:0,t:0},s.page||{})}catch(e){}
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}};
 
@@ -1056,6 +1085,9 @@ const POWERS={
     icon:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8.500 40.500L31 18" stroke="#fff" stroke-width="5.500" stroke-linecap="round"/><path d="M8.500 40.500L19.500 29.500" stroke="#ff9bd8" stroke-width="5.500" stroke-linecap="round"/><path d="M34 5.500l2.800 6.700 6.700 2.800-6.700 2.800L34 24.500l-2.800-6.700-6.700-2.800 6.700-2.800z" fill="#ffe27a" stroke="#fff" stroke-width="1.800" stroke-linejoin="round"/><path d="M13.500 9l1.400 3.200 3.200 1.400-3.200 1.400-1.400 3.200-1.400-3.200L8.900 13.600l3.200-1.400zM39.500 30l1.200 2.800 2.800 1.200-2.800 1.200-1.200 2.800-1.200-2.800-2.800-1.200 2.800-1.200z" fill="#fff"/></svg>'}
 };
 const PKEYS=Object.keys(POWERS);
+/* the power-ups open one by one as the player gets further (the first level that is not cleared yet counts) */
+const POWER_FROM={reveal:6,slow:12,brush:20};
+const powerOpen=k=>!!save.devUnlock||nextOpen('c')>=POWER_FROM[k];
 for(const k of PKEYS)POWERS[k].icon=`<img class="pimg" src="art/p_${k}.webp" alt="" draggable="false">`; // 3D renders (blender/)
 
 /* ================= dom ================= */
@@ -1094,6 +1126,7 @@ const dayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMont
 function shopState(){const t=dayStr();if(!save.shop||save.shop.day!==t){save.shop={day:t,bought:{reveal:0,slow:0,brush:0}};persist()}return save.shop}
 const ownsSkin=id=>save.skins.includes(id)||!!save.preview; // preview mode: every ball can be tried
 function normalizeSave(){
+  if(!save.seen||typeof save.seen!=='object')save.seen={};
   save.coins=Math.max(0,+save.coins||0);save.gems=Math.max(0,+save.gems||0);
   save.pvp=Object.assign({w:0,l:0},save.pvp||{});
   save.skins=(Array.isArray(save.skins)?save.skins:[]).filter(id=>SK[id]);
@@ -1326,6 +1359,7 @@ function openProfile(){
     <p class="shop-note">${since?`מצטרפים מ-${since}. `:''}ההתקדמות נשמרת במכשיר הזה.</p>
     <button class="btn small gbtn" id="pGoogle" type="button" disabled>התחברות עם Google<small>בקרוב</small></button>
     <div class="setrow"><span>הגדרות</span><button class="btn small" id="stSound" type="button"></button></div>
+    <div class="setrow"><span>הסברים</span><button class="btn small" id="stHelp" type="button">הצגה מחדש</button></div>
     <div class="setrow"><span>גרסה ${BUILD==='dev'?'לבדיקות':BUILD}</span><button class="btn small" id="stUpd" type="button">בדיקת עדכון</button></div>
     <div class="row"><button class="btn primary" id="pDone" type="button">שמירה</button></div>`);
   const paint=()=>{const v=document.getElementById('pvAv');v.style.background=st.av;v.innerHTML=avInner(st.pic,document.getElementById('pName').value||p.name)};
@@ -1334,6 +1368,7 @@ function openProfile(){
   const upd=()=>{document.getElementById('stSound').textContent=save.sound?'צליל: פועל':'צליל: כבוי'};upd();
   document.getElementById('stSound').onclick=()=>{toggleSound();upd()};
   document.getElementById('stUpd').onclick=()=>checkUpdate(true);
+  document.getElementById('stHelp').onclick=()=>{save.seen={};persist();toast('ההסברים יופיעו שוב בפעם הבאה שתתחילו שלב')};
   document.getElementById('pClose').onclick=()=>{sfx.click();closeModal()};
   document.getElementById('pDone').onclick=()=>{sfx.click();saveProfile(document.getElementById('pName').value,st.av,st.pic);closeModal()};
 }
@@ -1439,8 +1474,10 @@ async function startLevel(mode,n,opp){
   setScore();setProgress(true);setHearts();
   el.trackwrap.classList.add('idle');el.trackwrap.classList.remove('paused','slowfx','frozen','turbo','fog');trapBanner(null);
   resizeFx();
-  G.cd=3;G.cdShown=-1;G.state='countdown'; // 3, 2, 1 and the level starts by itself
-  el.count.hidden=false;audio();
+  // first-time explanations (how to play, a new power-up, a new trap) come before the countdown
+  const slides=window.__headless||save.noCoach?[]:coachFor(mode,n,L);
+  const go=()=>{G.cd=3;G.cdShown=-1;G.state='countdown';el.count.hidden=false;audio()}; // 3, 2, 1 and the level starts by itself
+  if(slides.length){G.state='coach';showCoach(slides,()=>{if(id!==G.loadId)return;slides.forEach(x=>{save.seen[x.key]=1});persist();go()})}else go();
 }
 function startPlay(){
   el.count.hidden=true;G.state='playing';el.trackwrap.classList.remove('idle');
@@ -1565,6 +1602,10 @@ function buildPowers(){
   el.powers.innerHTML='';
   PKEYS.forEach(k=>{
     const b=document.createElement('button');b.type='button';b.className='pw';b.dataset.k=k;
+    if(!powerOpen(k)){ // not open yet: a dim mark with a lock
+      b.classList.add('later');b.innerHTML=`<i></i><span class="ic">${POWERS[k].icon}</span><span class="nm">${POWERS[k].name}<small>משלב ${POWER_FROM[k]}</small></span><em>&#128274;</em>`;
+      b.setAttribute('aria-label',`${POWERS[k].name}, נפתח בשלב ${POWER_FROM[k]}`);b.addEventListener('click',()=>toast(`${POWERS[k].name} נפתח בשלב ${POWER_FROM[k]}`));el.powers.appendChild(b);return;
+    }
     b.innerHTML=`<i></i><span class="ic">${POWERS[k].icon}</span><span class="nm">${POWERS[k].name}<small>${POWERS[k].desc}</small></span><em>${save.inv[k]}</em>`;
     b.setAttribute('aria-label',`${POWERS[k].name}, ${POWERS[k].desc}`);
     b.addEventListener('click',()=>usePower(k));
@@ -1573,6 +1614,7 @@ function buildPowers(){
 }
 function refreshPowers(){
   el.powers.querySelectorAll('.pw').forEach(b=>{
+    if(b.classList.contains('later'))return;
     const k=b.dataset.k,n=save.inv[k],act=(k==='reveal'?G.fx.reveal:k==='slow'?G.fx.slow:0);
     b.querySelector('em').textContent=n;b.classList.toggle('empty',n<=0);
     b.classList.toggle('locked',G.fx.lock>0);b.classList.toggle('on',act>0);b.style.setProperty('--k',act>0?(act/(k==='reveal'?10:8)).toFixed(3):0);
@@ -1581,7 +1623,7 @@ function refreshPowers(){
 }
 
 function usePower(k){
-  if(G.state!=='playing'||G.cleared||save.inv[k]<=0||G.fx.lock>0)return;
+  if(G.state!=='playing'||G.cleared||save.inv[k]<=0||G.fx.lock>0||!powerOpen(k))return;
   if(k==='reveal'){if(G.fx.reveal>0)return;G.fx.reveal=10}
   else if(k==='slow'){if(G.fx.slow>0)return;G.fx.slow=8}
   else if(!brush())return;
@@ -2101,7 +2143,7 @@ function showEnd(win,stars,why){
   openSheet(el.end,!win);
 }
 function toMenu(){
-  tweens.length=0;orbs.length=0;fxp.length=0;floats.length=0;hideSheets();G.loadId++;
+  tweens.length=0;orbs.length=0;fxp.length=0;floats.length=0;hideSheets();G.loadId++;hideCoach();
   el.count.hidden=true;el.gwrap.classList.remove('shake');el.flash.classList.remove('on');
   G.state='menu';
   if(G.mode==='p')save.tab='pvp';
@@ -2184,6 +2226,50 @@ function drawFx(){
   ctx.globalAlpha=1;
 }
 
+/* ================= first-time explanations (the "coach") ================= */
+let coachRoot=null;
+function hideCoach(){if(coachRoot)coachRoot.hidden=true}
+const cBall=(c='#4dbbff',z=56)=>skinSvg(SK[save.skin]?save.skin:'candy',[c],z);
+const cMarked=(t,c='#ff8a2b',z=66)=>`<span class="cball">${cBall(c,z)}<svg class="cmark" viewBox="-12 -12 24 24" width="${z*.55}" height="${z*.55}"><circle r="10.5" fill="${TRAPS[t].col}" stroke="#fff" stroke-width="2"/>${TRAPS[t].icon}</svg></span>`;
+const cChip=(c,n)=>`<span class="chip" style="--c:${c};--t:#fff;--p:0;flex:none;width:38px"><span class="dot"><b>${n}</b></span></span>`;
+const cIcon=t=>`<svg viewBox="-12 -12 24 24" width="64" height="64"><circle r="11" fill="${TRAPS[t].col}"/>${TRAPS[t].icon}</svg>`;
+const CGRID=n=>`<span class="cgrid">${[0,1,2,3].map(i=>`<i class="${i<n?'on':''}"></i>`).join('')}</span>`;
+const TRAP_SHOW={
+  ice:{art:()=>`<span class="cfrost">${cIcon('ice')}<b>3</b></span>`,txt:'המסך קופא לכמה שניות ואי אפשר ללחוץ על שום כדור. הכדורים ממשיכים לרוץ.'},
+  erase:{art:()=>`${CGRID(3)}<span class="carrow">&#8592;</span>${CGRID(1)}`,txt:'חלקים שכבר צבעתם נמחקים מהציור, וצריך לצבוע אותם שוב.'},
+  sand:{art:()=>`<span class="cfrost">${cIcon('sand')}<b>-6</b></span>`,txt:'לחיצה עליו מורידה שניות מהשעון.'},
+  turbo:{art:()=>`<span class="cspeed">${cBall('#ff8a2b',46)}${cBall('#4dbbff',46)}${cBall('#2dbe6c',46)}</span>`,txt:'כל הכדורים מאיצים לכמה שניות, וקשה יותר לבחור.'},
+  fog:{art:()=>`<span class="cfog">${cBall('#ff8a2b',46)}${cBall('#4dbbff',46)}${cBall('#2dbe6c',46)}</span>`,txt:'הכדורים הופכים אפורים ומטושטשים לכמה שניות, וקשה לזהות צבעים.'},
+  lock:{art:()=>PKEYS.map(k=>`<span class="clockpw">${POWERS[k].icon}<em>&#128274;</em></span>`).join(''),txt:'כלי העזר ננעלים לכמה שניות.'}
+};
+function coachFor(mode,n,L){
+  const sl=[],seen=save.seen||(save.seen={}),add=(key,slides)=>{if(!seen[key])slides.forEach(x=>sl.push(Object.assign({key},x)))};
+  if(mode==='c'&&n===1)add('intro',[
+    {t:'ברוכים הבאים!',art:cBall('#ff6fae',54)+cBall('#4dbbff',54)+cBall('#2dbe6c',54),txt:'צובעים ציור בעזרת כדורים שרצים על הדרך. כל כדור נכון צובע חלק מהציור.'},
+    {t:'לוחצים רק על הצבע הנכון',art:cChip('#4dbbff',3)+cChip('#ff8a2b',5)+'<span class="carrow">&#8592;</span>'+cBall('#4dbbff',54),txt:'העיגולים למעלה מראים אילו צבעים הציור עדיין צריך, וכמה כדורים נשארו מכל צבע. לחצו רק על כדור בצבע כזה.'},
+    {t:'טעות עולה בלב',art:`<img src="art/heart.webp" width="40" alt=""><img src="art/heart.webp" width="40" alt=""><img src="art/heart_off.webp" width="40" alt=""><span class="carrow">&#8592;</span>${cBall('#9b5cf6',54)}`,txt:'לחיצה על כדור בצבע שהציור לא צריך לוקחת לב. כשנגמרים הלבבות השלב נגמר.'},
+    {t:'השעון',art:'<span class="cclock">2:00</span>',txt:'בכל שלב יש שעון. אם הזמן נגמר לפני שהציור מוכן, אפשר לנסות שוב. יש מספיק זמן, אל תילחצו.',btn:'יאללה, מתחילים'}]);
+  if(mode==='t'&&n===1)add('clock',[{t:'נגד הזמן',art:'<span class="cclock">1:30</span>',txt:'אותם ציורים, אבל קשה יותר: שעון צמוד, רק שתי פסילות ומלכודות. כוכבים לפי המהירות.',btn:'מתחילים'}]);
+  if(mode!=='p'&&!save.devUnlock)for(const k of PKEYS)if(powerOpen(k))add('pw_'+k,[{t:'כלי עזר חדש: '+POWERS[k].name,art:`<span class="cpw">${POWERS[k].icon}</span>`,txt:POWERS[k].long+' הכפתור נמצא בצד המסך. כשנגמר המלאי אפשר לקנות עוד בחנות.'}]);
+  const t=L.trapIntro;
+  if(t&&mode!=='p'){
+    if(L.trapIdx===0)add('trap_'+t,[
+      {t:'מלכודת חדשה: '+TRAPS[t].name,art:cMarked(t),txt:'כדור עם הסימן הזה הוא מלכודת. הוא לא לוקח לב, אבל יש לו אפקט. אל תלחצו עליו!'},
+      {t:'מה קורה אם לוחצים?',art:TRAP_SHOW[t].art(),txt:TRAP_SHOW[t].txt,btn:'הבנתי'}]);
+    else add('try_'+t,[{t:'נסו בעצמכם',art:cMarked(t),txt:`בשלב הזה אפשר ללחוץ פעם אחת על כדור עם הסימן (${TRAPS[t].name}) ולראות מה קורה. כאן זה לא נורא. בהמשך זה יהיה קשה יותר, אז כדאי להכיר.`,btn:'מתחילים'}]);
+  }
+  return sl;
+}
+function showCoach(slides,done){
+  if(!coachRoot){coachRoot=document.createElement('div');coachRoot.className='coach';coachRoot.id='coach';el.game.appendChild(coachRoot)}
+  let i=0;coachRoot.hidden=false;
+  const draw=()=>{
+    const s=slides[i],last=i===slides.length-1;
+    coachRoot.innerHTML=`<div class="cbox" role="dialog" aria-label="הסבר"><h3>${s.t}</h3><div class="cart">${s.art||''}</div><p>${s.txt}</p><div class="cdots">${slides.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><button class="btn primary" type="button">${last?(s.btn||'הבנתי'):'הבא'}</button></div>`;
+    coachRoot.querySelector('button').onclick=()=>{sfx.click();if(last){coachRoot.hidden=true;done()}else{i++;draw()}};
+  };
+  draw();
+}
 /* ================= main loop ================= */
 function update(dt){
   if(G.state==='menu'||G.state==='paused'||G.state==='loading')return;
@@ -2219,7 +2305,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-11-02.7'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-11-02.8'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
@@ -2251,7 +2337,7 @@ normalizeSave();renderMenu();showTab('home');showScreen('menu');startProfile();
 requestAnimationFrame(frame);
 
 // small hook for automated play-testing
-window.__cr={triggerTrap,unpaintParts,trapsFor,TRAP_PLAN,TRAPS,rollTrap,G,save,needed,renderTop,renderHome,goSide,openSettings,openProfile,openWelcome,saveProfile,specialLeft,renderDock,AVATARS,paintPart,coinsFor,gemsFor,pvpCoins,buyChest,buyPower,equipSkin,showTab,renderShop,openModal,closeModal,startPvp,makeBot,normalizeSave,shopState,dayStr,POWER_PRICE,POWER_DAILY,CHEST_COINS,CHEST_GEMS,SK,SKIN_IDS,skinSvg,PIC_PARTS,PIC_ORDER,usefulFrac,TRACKS,TRACK_TIERS,makeTrack,levelDef,makePool,getPicture,startLevel,tapBall,update,toMenu,usePower,POWERS,renderMenu,pauseGame,resume,nextOpen,cdist,PKEYS,persist,
+window.__cr={powerOpen,triggerTrap,unpaintParts,trapsFor,TRAP_PLAN,TRAPS,rollTrap,G,save,needed,renderTop,renderHome,goSide,openSettings,openProfile,openWelcome,saveProfile,specialLeft,renderDock,AVATARS,paintPart,coinsFor,gemsFor,pvpCoins,buyChest,buyPower,equipSkin,showTab,renderShop,openModal,closeModal,startPvp,makeBot,normalizeSave,shopState,dayStr,POWER_PRICE,POWER_DAILY,CHEST_COINS,CHEST_GEMS,SK,SKIN_IDS,skinSvg,PIC_PARTS,PIC_ORDER,usefulFrac,TRACKS,TRACK_TIERS,makeTrack,levelDef,makePool,getPicture,startLevel,tapBall,update,toMenu,usePower,POWERS,renderMenu,pauseGame,resume,nextOpen,cdist,PKEYS,persist,
   step(sec){for(let t=0;t<sec;t+=1/60)update(1/60)},
   skip:skipCountdown,
   bot(sec,{mistake=false}={}){
