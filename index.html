@@ -667,6 +667,12 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
 .trackwrap.fog #ballLayer{filter:grayscale(1) blur(2.4px) opacity(.85)}
 .pw.locked{filter:grayscale(1) brightness(.8);pointer-events:none}
 @media (prefers-reduced-motion:reduce){.tring{animation:none}}
+.trackwrap{background:none;box-shadow:none;border-radius:0}
+.trackwrap::after{display:none}
+/* on a phone the road runs from one edge of the screen to the other, without a frame */
+@media (orientation:portrait),(min-height:721px){
+  .trackwrap{width:calc(100% + max(16px,env(safe-area-inset-left,0px)) + max(16px,env(safe-area-inset-right,0px)));margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)))}
+}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -892,7 +898,9 @@ const TRACKS={
   zig2:()=>chaikin([[-30,30],[40,230],[110,30],[180,230],[250,30],[320,230],[390,30],[430,130]],4),
   loop1b:()=>fn(t=>{const s=(t*2-1)*3.9;return[200+40*s-120*Math.sin(s),130+82*Math.cos(s)]}),
   bigS:()=>chaikin([[-30,56],[270,56],[345,100],[270,144],[130,144],[55,188],[130,230],[430,230]],3),
-  bigS2:()=>chaikin([[-30,204],[270,204],[345,160],[270,116],[130,116],[55,72],[130,30],[430,30]],3)
+  bigS2:()=>chaikin([[-30,204],[270,204],[345,160],[270,116],[130,116],[55,72],[130,30],[430,30]],3),
+  /* a round spiral that winds in to the middle: the balls shrink on the way and drop into the hole */
+  spiralIn:()=>{const p=[[-30,30],[200,30]],N=520,turns=1.55;for(let i=1;i<=N;i++){const u=i/N,a=-Math.PI/2+2*Math.PI*turns*u,e=Math.pow(u,.9);p.push([200+lerp(170,22,e)*Math.cos(a),130+lerp(100,14,e)*Math.sin(a)])}return p}
 };
 const TRACK_TIERS=[['wave','serp3'],['wave','serp3','zig','serp4'],['zig','serp4','spiral','wave2','bigS'],['spiral','loop1','snake','wave2','bigS2','zig2'],['loop1','loop1b','snake','zig2','spiral','wave2','serp4','bigS2']];
 const STEP=2,BR=20;
@@ -901,7 +909,8 @@ function makeTrack(raw){
   const len=cum[cum.length-1],n=Math.floor(len/STEP),pts=[];let j=0;
   for(let k=0;k<=n;k++){const s=k*STEP;while(j<raw.length-2&&cum[j+1]<s)j++;const seg=cum[j+1]-cum[j]||1,f=Math.min(1,(s-cum[j])/seg);pts.push([raw[j][0]+(raw[j+1][0]-raw[j][0])*f,raw[j][1]+(raw[j+1][1]-raw[j][1])*f])}
   const last=pts[pts.length-1];
-  return{pts,len:n*STEP,n,inside:last[0]<390,end:last,
+  const inside=last[0]<390,sl=inside?Math.min(440,Math.max(30,n*STEP*.3)):0; // sl: the last stretch on which a ball shrinks towards the hole
+  return{pts,len:n*STEP,n,inside,sl,end:last,
     d:'M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L'),
     at(d){const i=Math.max(0,Math.min(this.n-.001,d/STEP)),a=Math.floor(i),f=i-a,p=this.pts[a],q=this.pts[a+1];return{x:p[0]+(q[0]-p[0])*f,y:p[1]+(q[1]-p[1])*f}}};
 }
@@ -968,7 +977,7 @@ function levelDef(mode,n){
     minDist:(n<4?64:lerp(46,30,d))*(kind==='boss'?.88:kind==='mini'?.94:1), // look-alike colours may come closer to the picture colours from level 4
     hint:lerp(.36,.2,d),
     pulse:kind==='boss'?Math.max(pulse,.2):pulse,
-    track:list[(n*7+3)%list.length],
+    track:(!kind&&!tr.intro&&n>=(timed?10:18)&&n%8===2)?'spiralIn':list[(n*7+3)%list.length], // every 8th level winds in to the middle
     lives:timed?2:3,
     redo:n<4?0:lerp(.22,.3,d), // chance that a useless ball repeats a picture colour that is already finished
     tip:tr.intro?TRAP_TIP[tr.intro]:tipFor(d,n,timed,kind)};
@@ -1409,12 +1418,12 @@ async function startLevel(mode,n,opp){
   G.pic=pic;L.pool=makePool([...new Set(pic.regions.map(r=>r.c))],L.minDist,L.d);
   buildArt(pic,L);buildChips();buildTrack(L);buildPowers();
   if(L.clock){
-    // the stream of useful balls sets the fastest possible pace (refTime). Clock levels leave 1.75x down to 1.45x of it, regular levels a wider
-    // margin (2.3x down to 1.65x, and a few extra seconds for the traps), so a regular level is never a race but can still be lost to a long dither
+    // the stream of useful balls sets the fastest possible pace (refTime). Clock levels leave 1.7x down to 1.4x of it, regular levels a wider
+    // margin (1.95x down to 1.5x, and a few extra seconds for the traps), so a regular level is never a race but can still be lost to a long dither
     const rate=(L.speed/G.spacing)*usefulFrac(L.need,L.skip);
     G.refTime=G.total/rate*.88;
-    G.limit=Math.round(L.timed?G.refTime*lerp(1.75,1.45,(n-1)/49)+4
-      :G.refTime*(n<4?3.5:lerp(2.3,1.65,(n-1)/199))+6+(L.traps.length?5:0));
+    G.limit=Math.round(L.timed?G.refTime*lerp(1.7,1.4,(n-1)/49)+3
+      :G.refTime*(n<4?2.4:lerp(1.95,1.5,(n-1)/199))+4+(L.traps.length?3:0));
     G.time=G.limit;
   }else{G.limit=0;G.refTime=0}
   setScore();setProgress(true);setHearts();
@@ -1877,7 +1886,7 @@ function renderBalls(){
   const T=G.track,rv=G.fx.reveal>0;
   for(const b of G.balls){
     const p=T.at(b.d);let s=1,o=1;
-    if(T.inside&&b.d>T.len-30)s=Math.max(0,(T.len-b.d)/30);
+    if(T.inside){const e=T.len-b.d;if(e<T.sl)s=(1-.68*(1-e/T.sl))*Math.min(1,e/26)} // smaller and smaller towards the middle, then gone into the hole
     if(b.pop){const k=Math.min(1,b.fade/.2);s*=1+.55*k;o=1-k}
     else if(b.dead){s*=Math.max(0,1-b.fade*2.4)}
     let hv=0;
@@ -2186,7 +2195,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-11-02.4'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-11-02.5'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
