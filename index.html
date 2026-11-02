@@ -652,6 +652,21 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
 .dock .dockmain:active{transform:scale(.98);box-shadow:0 6px 12px -8px rgba(47,120,115,.8),inset 0 2px 0 rgba(255,255,255,.4)}
 @media (max-height:520px){.dock .dockmain{font-size:20px;padding:9px 10px}}
 .updbar{position:absolute;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:60;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 14px;border-radius:18px;background:var(--surf);color:var(--ink);font-weight:800;box-shadow:0 0 0 2px var(--sun),0 14px 24px -12px rgba(90,66,30,.7)}
+.traptag{position:absolute;left:6px;bottom:6px;width:24px;height:24px;border-radius:50%;background:var(--tc);box-shadow:0 0 0 2px #fff,0 4px 8px -3px rgba(0,0,0,.5);display:grid;place-items:center}
+.thumb .traptag svg{width:17px;height:17px;display:block}
+.tring{animation:tring .8s ease-in-out infinite alternate}
+@keyframes tring{from{opacity:.5}to{opacity:1}}
+.trapban{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:5px 6px 5px 10px;border-radius:99px;background:rgba(20,26,56,.84);color:#fff;font:800 14px var(--body);box-shadow:0 0 0 2px var(--tc),0 8px 16px -8px rgba(0,0,0,.6);pointer-events:none;z-index:5;max-width:calc(100% - 16px);line-height:1.25}
+.trackwrap .trapban svg{position:static;width:22px;height:22px;flex:none}
+.trapban span{min-width:22px;text-align:center;background:var(--tc);border-radius:99px;padding:1px 6px;font-size:13px}
+.trackwrap.frozen{box-shadow:0 22px 34px -20px rgba(37,65,63,.85),inset 0 0 0 4px rgba(150,220,255,.9),inset 0 0 70px rgba(150,220,255,.5)}
+.trackwrap.frozen::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(90% 80% at 50% 50%,rgba(210,240,255,.1) 0,rgba(170,225,255,.5) 100%);z-index:4}
+.trackwrap.turbo{box-shadow:0 22px 34px -20px rgba(37,65,63,.85),inset 0 0 0 3px rgba(255,110,70,.85),inset 0 0 40px rgba(255,110,70,.4)}
+.trackwrap.turbo::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(105deg,transparent 0 26px,rgba(255,150,100,.18) 26px 30px);z-index:4}
+.trackwrap.fog{box-shadow:0 22px 34px -20px rgba(37,65,63,.85),inset 0 0 0 3px rgba(150,140,200,.75),inset 0 0 60px rgba(180,170,220,.4)}
+.trackwrap.fog #ballLayer{filter:grayscale(1) blur(2.4px) opacity(.85)}
+.pw.locked{filter:grayscale(1) brightness(.8);pointer-events:none}
+@media (prefers-reduced-motion:reduce){.tring{animation:none}}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -893,7 +908,7 @@ function makeTrack(raw){
 
 /* ================= levels: difficulty rises smoothly from level 1 to level 200 =================
    d = 0..1. Speed, spacing, share of useful balls, look-alike colours, fainter hints, speed pulses and track shape all follow d.
-   Timed levels reuse the pictures of levels 1-50 with the difficulty of levels 51-100, a clock and only 2 lives. */
+   Timed levels reuse the pictures of levels 1-50 with the difficulty of levels 71-120, a clock and only 2 lives. */
 const lerp=(a,b,t)=>a+(b-a)*t;
 /* Pictures are played from small to large (PIC_ORDER, by number of parts PIC_PARTS) so a level never suddenly takes twice as long as the one before.
    tools/tests.js checks both tables against the real pictures. */
@@ -902,8 +917,28 @@ const PIC_ORDER=[1,2,3,4,20,39,5,6,7,45,14,17,23,24,16,15,8,22,19,18,34,37,30,29
 /* share of useful balls in the stream when every ball is useful with chance q but at most `skip` useless balls follow one another */
 const usefulFrac=(q,skip)=>1/(1+(1-q)*(1-Math.pow(1-q,skip))/q);
 function needFor(f,skip){let lo=.05,hi=.97;for(let i=0;i<30;i++){const m=(lo+hi)/2;if(usefulFrac(m,skip)<f)lo=m;else hi=m}return(lo+hi)/2}
+/* Trap balls: a useless ball that carries a mark. Tapping it costs no heart, but its effect hits: ice (freeze: no taps), eraser (paint is taken off the picture),
+   sand (seconds off the clock), turbo (balls speed up), fog (balls turn grey and blurry), lock (power-ups locked). They are introduced one by one:
+   plan[type]=[first level, levels it stays alone]. The first two levels of each trap are gentle so the player learns it; later all unlocked traps mix.
+   Regular levels and clock levels have their own plan. */
+const TRAP_PLAN={
+  c:{ice:[12,14],erase:[26,8],sand:[52,6],turbo:[76,6],fog:[106,6],lock:[136,6]}, // the first two levels of a trap are never a mini-boss or boss
+  t:{ice:[6,5],erase:[12,4],sand:[21,3],turbo:[31,3],fog:[41,3],lock:[47,3]}};
+function trapsFor(plan,n){
+  const act=Object.keys(plan).filter(k=>n>=plan[k][0]);
+  if(!act.length)return{list:[],intro:'',idx:99,newest:''};
+  const last=act[act.length-1],[from,solo]=plan[last];
+  return{list:n<from+solo?[last]:act,intro:n-from<2?last:'',idx:n-from,newest:last};
+}
+const TRAP_TIP={
+  ice:'מלכודת חדשה: כדור עם סימן קרח. לחיצה עליו מקפיאה את המסך לכמה שניות, ואי אפשר ללחוץ.',
+  erase:'מלכודת חדשה: כדור עם מחק. לחיצה עליו מוחקת חלקים מהציור שכבר צבעתם.',
+  sand:'מלכודת חדשה: כדור עם שעון חול. לחיצה עליו מורידה שניות מהשעון.',
+  turbo:'מלכודת חדשה: כדור עם ברק. לחיצה עליו מאיצה את כל הכדורים לכמה שניות.',
+  fog:'מלכודת חדשה: כדור עם ענן. לחיצה עליו מכסה את הכדורים בערפל אפור לכמה שניות.',
+  lock:'מלכודת חדשה: כדור עם מנעול. לחיצה עליו נועלת את כלי העזר לכמה שניות.'};
 function levelDef(mode,n){
-  const timed=mode==='t',cn=timed?n+50:n;
+  const timed=mode==='t',cn=timed?n+70:n; // clock levels play like levels 71-120: clearly harder than the regular ones with the same pictures
   // every 5th level is a mini-boss and every 10th a boss: clearly harder than the levels around them.
   // The regular curve stops at 0.88 so that the last boss (level 200) can still be the hardest level of all.
   const kind=n%10===0?'boss':n%5===0?'mini':'';
@@ -920,7 +955,11 @@ function levelDef(mode,n){
   // at most `cap` of the balls may be useful (levels 1-3 teach the rules and stay gentle): a player who taps every ball loses hearts fast
   const cap=n<4?.8:Math.max(lerp(.66,.48,d),.8-.06*(n-3)),f=Math.min(cap,parts/(T0*ballRate)),need=needFor(f,skip);
   const T=T0;
-  return{mode,n,slot,parts,T,d,d0,kind,timed,
+  const tr=mode==='p'?trapsFor({},n):trapsFor(TRAP_PLAN[timed?'t':'c'],n),nTr=tr.list.length;
+  const trapBase=lerp(.09,.24,d)*(1+.08*Math.max(0,nTr-1))*(kind==='boss'?1.3:kind==='mini'?1.12:1);
+  const trapRamp=tr.intro?(tr.idx===0?.5:.7):Math.min(1,.7+.06*(tr.idx-2)); // a new trap starts rare and grows
+  return{mode,n,slot,parts,T,d,d0,kind,timed,clock:mode!=='p',
+    traps:tr.list,trapIntro:tr.intro,trapIdx:tr.idx,trapRate:nTr?Math.min(.4,trapBase*trapRamp):0,trapGap:nTr?Math.max(2,Math.round(lerp(8,3,d)))+(tr.intro?3:0):99,trapPow:Math.min(1,.15+d*.9),
     speed,gap,need,skip,
     // look-alike balls: `sim` is the share of useless balls chosen among the closest colours to a needed one (from level 4 at least
     // a quarter of them), `trap` the chance that a look-alike comes right behind the real ball
@@ -932,14 +971,14 @@ function levelDef(mode,n){
     track:list[(n*7+3)%list.length],
     lives:timed?2:3,
     redo:n<4?0:lerp(.22,.3,d), // chance that a useless ball repeats a picture colour that is already finished
-    tip:tipFor(d,n,timed,kind)};
+    tip:tr.intro?TRAP_TIP[tr.intro]:tipFor(d,n,timed,kind)};
 }
 const KIND_NAME={mini:'מיני-בוס',boss:'בוס'};
 function tipFor(d,n,timed,kind){
   if(kind==='boss')return'בוס! קשה יותר מהשלבים שלפניו: מהיר יותר וצבעים דומים מאוד. אפשר להשתמש בכלי העזר.';
   if(kind==='mini')return'מיני-בוס: קצת יותר קשה מהשלבים שלפניו.';
   if(timed)return'מרוץ נגד השעון. אותו ציור, אבל קשה יותר, יש רק 2 פסילות והזמן נגמר. כוכבים לפי המהירות שלכם.';
-  if(n===1)return'לחצו על כדור בצבע שמופיע חלש בציור. כדור בצבע לא נכון עולה לכם בלב. הכפתורים למטה הם כלי עזר.';
+  if(n===1)return'לחצו על כדור בצבע שמופיע חלש בציור. כדור בצבע לא נכון עולה לכם בלב. יש שעון: כשהזמן נגמר השלב נכשל. הכפתורים למטה הם כלי עזר.';
   if(n===2)return'אזור גדול מתמלא באחוזים: כל כדור נכון מוסיף עוד חלק מהאזור, עד 100%. הטבעת סביב העיגול מראה כמה מהצבע כבר מולא.';
   if(n===3)return'העיגולים למעלה מראים כמה לחיצות נשארו בכל צבע. כדור בצבע שכבר גמרתם נחשב טעות.';
   if(d<.15)return'לחצו רק על צבעים שהציור עדיין צריך. אפשר להשתמש בהארה כשקשה למצוא.';
@@ -983,7 +1022,8 @@ const sfx={
   click(){tone(600,.06,'sine',.1)},
   power(){tone(520,.12,'sine',.14,0,2);tone(780,.2,'triangle',.12,.08,1.5)},
   tick(){tone(700,.09,'triangle',.12)},
-  go(){tone(1046,.25,'triangle',.16,0,1.3)}
+  go(){tone(1046,.25,'triangle',.16,0,1.3)},
+  trap(){tone(300,.14,'square',.1,0,.5);tone(200,.28,'sawtooth',.1,.1,.5)}
 };
 const vib=ms=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
 
@@ -1302,8 +1342,8 @@ function renderMenu(){
     const s=stk(m)[n]||0,b=document.createElement('button');b.className='lv';b.type='button';
     const def=levelDef(m,n);
     if(def.kind)b.classList.add(def.kind);
-    b.setAttribute('aria-label',`שלב ${n}${def.kind?', '+KIND_NAME[def.kind]:''}, ${s} כוכבים`);
-    b.innerHTML=`<span class="thumb"><span class="img"></span><i class="num">${n}</i>${def.kind?`<i class="kindtag">${KIND_NAME[def.kind]}</i>`:''}</span><span class="stars">${[1,2,3].map(k=>starSvg(k<=s)).join('')}</span>`;
+    b.setAttribute('aria-label',`שלב ${n}${def.kind?', '+KIND_NAME[def.kind]:''}${def.trapIntro?', מלכודת חדשה: '+TRAPS[def.trapIntro].name:''}, ${s} כוכבים`);
+    b.innerHTML=`<span class="thumb"><span class="img"></span><i class="num">${n}</i>${def.kind?`<i class="kindtag">${KIND_NAME[def.kind]}</i>`:''}${def.trapIntro?`<i class="traptag" style="--tc:${TRAPS[def.trapIntro].col}" title="מלכודת חדשה: ${TRAPS[def.trapIntro].name}"><svg viewBox="-9 -9 18 18" aria-hidden="true">${TRAPS[def.trapIntro].icon}</svg></i>`:''}</span><span class="stars">${[1,2,3].map(k=>starSvg(k<=s)).join('')}</span>`;
     b.addEventListener('click',()=>{sfx.click();startLevel(m,n)});
     el.grid.appendChild(b);
     getPicture(def.slot).then(p=>{b.querySelector('.img').innerHTML=thumb(p.regions,s>0,def.hint+.05)}).catch(()=>{});
@@ -1313,7 +1353,7 @@ function renderMenu(){
   el.secTitle.textContent=m==='t'?'נגד הזמן':'שלבים';
   el.pgLabel.textContent=`${first}–${last}`;
   el.pgPrev.disabled=pg===0;el.pgNext.disabled=pg>=pages(m)-1;
-  el.lvInfo.textContent=m==='t'?'אותם ציורים, קשה יותר, עם שעון':`${TOTAL_C} שלבים · 3 פסילות בכל שלב`;
+  el.lvInfo.textContent=m==='t'?'אותם ציורים, קשה יותר, שעון צמוד ומלכודות':`${TOTAL_C} שלבים · 3 פסילות · שעון בכל שלב`;
   setPlay();
   renderInv();renderSound();renderTop();
 }
@@ -1326,7 +1366,7 @@ function toggleSound(){save.sound=!save.sound;persist();renderSound();if(save.so
 el.soundBtn.onclick=toggleSound;el.soundBtn2.onclick=toggleSound;
 
 /* ================= game state ================= */
-const G={state:'menu',mode:'c',n:1,lvl:null,pic:null,balls:[],parts:[],regs:[],colors:new Map(),track:null,lives:3,maxLives:3,score:0,combo:0,maxCombo:0,remaining:0,total:0,spawnAcc:0,sinceNeed:0,spacing:60,lastColor:null,cleared:false,mistakes:0,t:0,fx:{reveal:0,slow:0},limit:0,time:0,clockAt:0,loadId:0};
+const G={state:'menu',mode:'c',n:1,lvl:null,pic:null,balls:[],parts:[],regs:[],colors:new Map(),track:null,lives:3,maxLives:3,score:0,combo:0,maxCombo:0,remaining:0,total:0,spawnAcc:0,sinceNeed:0,spacing:60,lastColor:null,cleared:false,mistakes:0,t:0,fx:{reveal:0,slow:0,freeze:0,turbo:0,fog:0,lock:0},limit:0,time:0,clockAt:0,loadId:0,paintLog:[],sinceTrap:0,nTrap:0,trapsHit:0,trapType:null,fxSig:0,introSec:0};
 const tweens=[];
 const tween=(dur,fn,done)=>tweens.push({t:0,dur,fn,done});
 const after=(sec,done)=>tweens.push({t:0,dur:sec,fn:null,done});
@@ -1353,7 +1393,7 @@ async function startLevel(mode,n,opp){
   // a left-over animation class would play again when the screen is shown: clear the shake and the red flash
   el.gwrap.classList.remove('shake');el.flash.classList.remove('on');
   const L=levelDef(mode,n);if(mode==='p')L.tip='קרב מהיר! מי שמשלים את הציור קודם מנצח.';
-  Object.assign(G,{opp:opp||null,pvp:mode==='p'&&opp?{name:opp.name,phase:opp.phase,T:L.T*opp.fac,t:0,prog:0}:null,mode,n,lvl:L,state:'loading',balls:[],lives:L.lives,maxLives:L.lives,score:0,combo:0,maxCombo:0,mistakes:0,cleared:false,sinceNeed:0,lastColor:null,t:0,fx:{reveal:0,slow:0},cd:0,cdShown:-1,nSpawn:0,nUseful:0,lastWasNeed:false,lastNeedColor:null,skin:SK[save.skin]?save.skin:'candy'});
+  Object.assign(G,{opp:opp||null,pvp:mode==='p'&&opp?{name:opp.name,phase:opp.phase,T:L.T*opp.fac,t:0,prog:0}:null,mode,n,lvl:L,state:'loading',balls:[],lives:L.lives,maxLives:L.lives,score:0,combo:0,maxCombo:0,mistakes:0,cleared:false,sinceNeed:0,lastColor:null,t:0,fx:{reveal:0,slow:0,freeze:0,turbo:0,fog:0,lock:0},paintLog:[],sinceTrap:0,nTrap:0,trapsHit:0,trapType:null,fxSig:0,introSec:0,cd:0,cdShown:-1,nSpawn:0,nUseful:0,lastWasNeed:false,lastNeedColor:null,skin:SK[save.skin]?save.skin:'candy'});
   el.art.innerHTML='';el.chips.innerHTML='';el.track.innerHTML='';el.powers.innerHTML='';
   el.hudTitle.textContent=`${mode==='t'?'שעון':mode==='p'?'קרב · שלב':'שלב'} ${n}${L.kind?' · '+KIND_NAME[L.kind]:''}`;el.score.textContent='';
   el.hud.classList.toggle('pvp',!!G.pvp);el.oppRow.hidden=!G.pvp;el.oppBar.style.width='0%';el.oppName.textContent=G.pvp?opp.name+' · בוט':'';
@@ -1368,13 +1408,17 @@ async function startLevel(mode,n,opp){
   if(id!==G.loadId)return;
   G.pic=pic;L.pool=makePool([...new Set(pic.regions.map(r=>r.c))],L.minDist,L.d);
   buildArt(pic,L);buildChips();buildTrack(L);buildPowers();
-  if(L.timed){
-    // the stream of useful balls sets the fastest possible pace; the clock leaves a generous margin early and a thin one late
+  if(L.clock){
+    // the stream of useful balls sets the fastest possible pace (refTime). Clock levels leave 1.75x down to 1.45x of it, regular levels a wider
+    // margin (2.3x down to 1.65x, and a few extra seconds for the traps), so a regular level is never a race but can still be lost to a long dither
     const rate=(L.speed/G.spacing)*usefulFrac(L.need,L.skip);
-    G.refTime=G.total/rate*.88;G.limit=Math.round(G.refTime*lerp(2.1,1.7,(n-1)/49)+5);G.time=G.limit;
+    G.refTime=G.total/rate*.88;
+    G.limit=Math.round(L.timed?G.refTime*lerp(1.75,1.45,(n-1)/49)+4
+      :G.refTime*(n<4?3.5:lerp(2.3,1.65,(n-1)/199))+6+(L.traps.length?5:0));
+    G.time=G.limit;
   }else{G.limit=0;G.refTime=0}
   setScore();setProgress(true);setHearts();
-  el.trackwrap.classList.add('idle');el.trackwrap.classList.remove('paused','slowfx');
+  el.trackwrap.classList.add('idle');el.trackwrap.classList.remove('paused','slowfx','frozen','turbo','fog');trapBanner(null);
   resizeFx();
   G.cd=3;G.cdShown=-1;G.state='countdown'; // 3, 2, 1 and the level starts by itself
   el.count.hidden=false;audio();
@@ -1382,6 +1426,7 @@ async function startLevel(mode,n,opp){
 function startPlay(){
   el.count.hidden=true;G.state='playing';el.trackwrap.classList.remove('idle');
   G.spawnAcc=G.spacing; // the first ball enters at the very start of the track
+  G.introSec=G.lvl.trapIntro?7:0;
   refreshPowers();sfx.go();
 }
 function skipCountdown(){if(G.state==='countdown'){G.cd=0;update(.001)}}
@@ -1476,7 +1521,7 @@ function chipUpdate(c){
   c.el.querySelector('b').textContent=c.rem;
   c.el.style.setProperty('--p',((c.total-c.rem)/c.total*100).toFixed(0));
   c.el.classList.remove('bump');void c.el.offsetWidth;c.el.classList.add('bump');
-  if(!c.rem)c.el.classList.add('done');
+  c.el.classList.toggle('done',!c.rem);
 }
 function setHearts(lostIdx=-1){
   el.hearts.innerHTML='';
@@ -1493,7 +1538,7 @@ function setProgress(instant){
 }
 function setScore(){
   const sc=G.score?G.score.toLocaleString('he-IL')+' נק׳':'';
-  el.score.innerHTML=(G.lvl&&G.lvl.timed?`<span class="clock${G.time<=10?' low':''}">${fmtTime(G.time)}</span>`:'')+sc;
+  el.score.innerHTML=(G.limit>0?`<span class="clock${G.time<=10?' low':''}">${fmtTime(G.time)}</span>`:'')+sc;
 }
 
 /* ---------- power-ups ---------- */
@@ -1511,12 +1556,13 @@ function refreshPowers(){
   el.powers.querySelectorAll('.pw').forEach(b=>{
     const k=b.dataset.k,n=save.inv[k],act=(k==='reveal'?G.fx.reveal:k==='slow'?G.fx.slow:0);
     b.querySelector('em').textContent=n;b.classList.toggle('empty',n<=0);
-    b.classList.toggle('on',act>0);b.style.setProperty('--k',act>0?(act/(k==='reveal'?10:8)).toFixed(3):0);
+    b.classList.toggle('locked',G.fx.lock>0);b.classList.toggle('on',act>0);b.style.setProperty('--k',act>0?(act/(k==='reveal'?10:8)).toFixed(3):0);
   });
   el.trackwrap.classList.toggle('slowfx',G.fx.slow>0);
 }
+
 function usePower(k){
-  if(G.state!=='playing'||G.cleared||save.inv[k]<=0)return;
+  if(G.state!=='playing'||G.cleared||save.inv[k]<=0||G.fx.lock>0)return;
   if(k==='reveal'){if(G.fx.reveal>0)return;G.fx.reveal=10}
   else if(k==='slow'){if(G.fx.slow>0)return;G.fx.slow=8}
   else if(!brush())return;
@@ -1528,7 +1574,7 @@ function brush(){
   for(let i=0;i<3&&G.remaining>0;i++){
     let best=null;for(const c of G.colors.values())if(c.rem>0&&(!best||c.rem>best.rem))best=c;
     if(!best)break;
-    const part=nextPart(best.col);part.painted=true;best.rem--;G.remaining--;did++;
+    const part=nextPart(best.col);part.painted=true;G.paintLog.push(part);best.rem--;G.remaining--;did++;
     chipUpdate(best);
     const to=HL?{x:0,y:0}:toFx(partClient(part));
     orbs.push({x0:from.x,y0:from.y,x1:to.x,y1:to.y,cx:(from.x+to.x)/2+(rnd()*100-50),cy:Math.min(from.y,to.y)-90,t:0,dur:.55,wait:i*.22,color:best.col,part,last:G.remaining===0});
@@ -1556,6 +1602,19 @@ function buildTrack(L){
   G.spawnAcc=G.spacing;renderBalls(); // the track starts empty: balls enter from the start once the level begins
 }
 function pickColor(){
+  const c=pickColor0();G.trapType=needed(c)?null:rollTrap();
+  return c;
+}
+/* a useless ball may carry a trap mark: not before the 6th ball, never closer than trapGap balls to the previous trap,
+   and a level that introduces a trap shows it by the 9th ball at the latest */
+function rollTrap(){
+  const L=G.lvl;if(!L.traps||!L.traps.length)return null;
+  G.sinceTrap++;
+  if(G.nSpawn<6||G.sinceTrap<L.trapGap)return null;
+  if(rnd()<(L.trapIntro&&!G.nTrap&&G.nSpawn>=9?1:L.trapRate)){G.sinceTrap=0;G.nTrap++;return L.traps[Math.floor(rnd()*L.traps.length)]}
+  return null;
+}
+function pickColor0(){
   const L=G.lvl,need=[...G.colors.values()].filter(c=>c.rem>0);
   let wantNeed=need.length&&(rnd()<L.need||G.sinceNeed>=L.skip);
   if(wantNeed){
@@ -1744,14 +1803,73 @@ function skinSvg(sk,cols,size=64){
   return s;
 }
 
+/* ---------- traps ---------- */
+const TRAPS={
+  ice:{col:'#4fc3f7',name:'הקפאה',icon:'<path d="M0 -6.5V6.5M-5.6 -3.2L5.6 3.2M-5.6 3.2L5.6 -3.2" stroke="#fff" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M-2 -5.5L0 -7.5L2 -5.5M-2 5.5L0 7.5L2 5.5" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>'},
+  erase:{col:'#ff6fae',name:'מחק',icon:'<g transform="rotate(-35)"><rect x="-6" y="-3.4" width="12" height="6.8" rx="1.6" fill="#fff"/><rect x="-6" y="-3.4" width="4.4" height="6.8" rx="1.6" fill="#ffb3d2"/></g>'},
+  sand:{col:'#f0a020',name:'שעון חול',icon:'<path d="M-4.2 -6.4H4.2L.6 0L4.2 6.4H-4.2L-.6 0Z" fill="#fff"/><path d="M-2.2 -5H2.2L0 -1.6Z" fill="#f0a020"/>'},
+  turbo:{col:'#ff5a3c',name:'מהירות',icon:'<path d="M1.6 -7.4L-4.6 1.2H-.4L-1.6 7.4L4.6 -1.2H.4Z" fill="#fff"/>'},
+  fog:{col:'#8b80c8',name:'ערפל',icon:'<path d="M-5.6 3.6A3.2 3.2 0 0 1 -4.4 -2.6A4.4 4.4 0 0 1 3.4 -3.4A3.4 3.4 0 0 1 5.6 3.6Z" fill="#fff"/>'},
+  lock:{col:'#6b7394',name:'מנעול',icon:'<rect x="-4.4" y="-.8" width="8.8" height="6.6" rx="1.3" fill="#fff"/><path d="M-2.6 -1V-3.6A2.6 2.6 0 0 1 2.6 -3.6V-1" fill="none" stroke="#fff" stroke-width="1.6"/>'}
+};
+const TRAP_KEYS=Object.keys(TRAPS);
+/* the mark: a pulsing dashed ring around the ball plus a badge with the trap's symbol */
+const trapMark=t=>{const T=TRAPS[t];return `<circle r="${BR+6}" fill="none" stroke="${T.col}" stroke-opacity=".38" stroke-width="9"/><circle class="tring" r="${BR+5}" fill="none" stroke="${T.col}" stroke-width="3.4" stroke-dasharray="7 4"/><g transform="translate(${BR*.62} ${-BR*.74}) scale(1.28)"><circle r="10" fill="${T.col}" stroke="#fff" stroke-width="2"/>${T.icon}</g>`};
+let bannerEl=null;
+function trapBanner(t,sec,hint){
+  if(!bannerEl){bannerEl=document.createElement('div');bannerEl.className='trapban';bannerEl.hidden=true;el.trackwrap.appendChild(bannerEl)}
+  if(!t){bannerEl.hidden=true;return}
+  const T=TRAPS[t];bannerEl.hidden=false;bannerEl.style.setProperty('--tc',T.col);
+  bannerEl.innerHTML=`<svg viewBox="-12 -12 24 24" width="22" height="22" aria-hidden="true"><circle r="11" fill="${T.col}"/>${T.icon}</svg><b>${hint||{ice:'הקפאה! אי אפשר ללחוץ',turbo:'הכדורים מהירים יותר',fog:'ערפל',lock:'כלי העזר נעולים'}[t]||T.name}</b>${hint?'':`<span>${Math.ceil(sec)}</span>`}`;
+}
+/* a trap ball was tapped: no heart is lost, but its effect hits and the combo is gone */
+function triggerTrap(b){
+  const t=b.trap,L=G.lvl,pw=L.trapPow,HL=!!window.__headless;
+  b.dead=true;b.pop=true;b.fade=0;G.combo=0;G.trapsHit++;
+  let msg='';
+  if(t==='ice'){G.fx.freeze=lerp(2,3.8,pw);msg='קפוא!'}
+  else if(t==='erase'){const k=unpaintParts(1+Math.floor(pw*2.2));msg=k?`נמחקו ${k} חלקים`:'אין מה למחוק'}
+  else if(t==='sand'){const sec=Math.round(lerp(4,9,pw));if(G.limit>0){G.time=Math.max(0,G.time-sec);setScore()}msg=`-${sec} שניות`}
+  else if(t==='turbo'){G.fx.turbo=lerp(4,6.5,pw);msg='מהר!'}
+  else if(t==='fog'){G.fx.fog=lerp(3.2,5.5,pw);msg='ערפל'}
+  else if(t==='lock'){G.fx.lock=lerp(6,10,pw);msg='נעול'}
+  if(!HL){
+    const p=toFx(ballClient(b));burst(p.x,p.y,TRAPS[t].col,12,160,3.6);floats.push({x:p.x,y:p.y-20,text:msg,life:1.3,max:1.3});
+    el.gwrap.classList.remove('shake');void el.gwrap.offsetWidth;el.gwrap.classList.add('shake');
+  }
+  sfx.trap();vib([20,30,20]);refreshFx();
+  if(G.limit>0&&G.time<=0){G.time=0;timeUp()}
+}
+/* take the last painted parts off the picture again (the parts painted most recently go first) */
+function unpaintParts(k){
+  let n=0;
+  while(n<k&&G.paintLog.length){
+    const part=G.paintLog.pop();if(!part.painted)continue;
+    part.painted=false;part.done=false;G.remaining++;n++;
+    const info=G.colors.get(part.c);info.rem++;chipUpdate(info);
+    const reg=part.reg,to=part.k/reg.n;reg.g.classList.remove('done');
+    if(reg.el){const tok=reg.tok=(reg.tok||0)+1,from=reg.f;reg.goal=to;tween(.45,p=>{if(reg.tok===tok)setFill(reg,from+(to-from)*easeOut(p))},()=>{if(reg.tok===tok)setFill(reg,to)})}
+    else reg.paint.innerHTML='';
+  }
+  setProgress();
+  return n;
+}
+/* the timed effects: classes on the track, the banner and the locked look of the power-ups */
+function refreshFx(){
+  const f=G.fx,w=el.trackwrap,sig=(f.freeze>0?1:0)+(f.turbo>0?2:0)+(f.fog>0?4:0)+(f.lock>0?8:0);
+  w.classList.toggle('frozen',f.freeze>0);w.classList.toggle('turbo',f.turbo>0);w.classList.toggle('fog',f.fog>0);
+  const top=f.freeze>0?'ice':f.fog>0?'fog':f.turbo>0?'turbo':f.lock>0?'lock':null,hint=!top&&G.introSec>0&&G.lvl&&G.lvl.trapIntro?G.lvl.trapIntro:null;
+  trapBanner(top||hint,top?f[top==='ice'?'freeze':top]:0,hint?`מלכודת חדשה: ${TRAPS[hint].name}. אל תלחצו על כדור עם הסימן`:null);
+  if(sig+(hint?16:0)!==G.fxSig){G.fxSig=sig+(hint?16:0);el.powers.querySelectorAll('.pw').forEach(b=>b.classList.toggle('locked',f.lock>0))}
+}
 const STUB={setAttribute(){},remove(){},classList:{add(){},remove(){}},insertAdjacentHTML(){}};
 function addBall(d){
   const color=pickColor();G.lastColor=color;G.nSpawn++;if(needed(color))G.nUseful++;
-  if(window.__headless){const b={color,d,el:STUB,roll:STUB,halo:STUB,halo2:STUB,dead:false,fade:0,id:rnd(),hv:0};G.balls.unshift(b);return b} // bots play without drawing
+  if(window.__headless){const b={color,d,el:STUB,roll:STUB,halo:STUB,halo2:STUB,dead:false,fade:0,id:rnd(),hv:0,trap:G.trapType};G.balls.unshift(b);return b} // bots play without drawing
   const g=document.createElementNS(NS,'g');g.setAttribute('class','ball');
-  ensureDefs(G.skin,color);g.innerHTML=ballFull(G.skin,color);
+  ensureDefs(G.skin,color);g.innerHTML=ballFull(G.skin,color)+(G.trapType?trapMark(G.trapType):'');
   G.layer.appendChild(g);
-  const b={color,d,el:g,roll:g.querySelector('.roll')||STUB,halo:g.querySelector('.halo'),halo2:g.querySelector('.halo2'),dead:false,fade:0,id:Math.random(),hv:0};
+  const b={color,d,el:g,roll:g.querySelector('.roll')||STUB,halo:g.querySelector('.halo'),halo2:g.querySelector('.halo2'),dead:false,fade:0,id:Math.random(),hv:0,trap:G.trapType};
   G.balls.unshift(b);return b; // newest (smallest d) first
 }
 function renderBalls(){
@@ -1775,6 +1893,7 @@ function moveBalls(dt){
   const T=G.track,L=G.lvl;
   let sp=L.speed*(1+(L.pulse?L.pulse*Math.sin(G.t*.8):0));
   if(G.fx.slow>0)sp*=.38;
+  if(G.fx.turbo>0)sp*=1.65;
   const v=sp*dt;
   for(const b of G.balls){b.d+=v;if(b.dead)b.fade+=dt}
   if(G.state==='playing'){
@@ -1806,7 +1925,8 @@ el.trackwrap.addEventListener('pointerdown',e=>{
   const b=ballAt(e.clientX,e.clientY);if(b)tapBall(b);
 });
 function tapBall(b){
-  if(G.state!=='playing'||G.cleared||b.dead)return;
+  if(G.state!=='playing'||G.cleared||b.dead||G.fx.freeze>0)return; // a frozen screen ignores taps
+  if(b.trap){triggerTrap(b);return}
   const info=G.colors.get(b.color);
   if(info&&info.rem>0)correct(b,info);else wrong(b);
 }
@@ -1820,7 +1940,7 @@ const toFx=pt=>{const r=el.fx.getBoundingClientRect();return{x:pt.x-r.left,y:pt.
 function correct(b,info){
   G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);
   const pts=100+Math.min(G.combo-1,6)*25;G.score+=pts;setScore();
-  const part=nextPart(b.color);part.painted=true;info.rem--;G.remaining--;
+  const part=nextPart(b.color);part.painted=true;G.paintLog.push(part);info.rem--;G.remaining--;
   chipUpdate(info);setProgress();
   const HL=!!window.__headless,from=HL?{x:0,y:0}:toFx(ballClient(b)),to=HL?{x:0,y:0}:toFx(partClient(part));
   if(!HL){
@@ -1882,6 +2002,7 @@ function pvpStep(dt){
 function finish(win,why){
   if(G.state==='finishing'||G.state==='over')return;
   G.state='finishing';
+  for(const k of['freeze','turbo','fog','lock'])G.fx[k]=0;refreshFx();
   const T=G.mode==='t';
   G.gain={coins:0,gems:0};G.reward=[];
   const glow=()=>{el.card.classList.remove('glow');void el.card.offsetWidth;el.card.classList.add('glow');confetti();sfx.win();vib([20,30,20,30,60])};
@@ -1996,7 +2117,7 @@ function stepFx(dt){
     o.x=u*u*o.x0+2*u*e*o.cx+e*e*o.x1;o.y=u*u*o.y0+2*u*e*o.cy+e*e*o.y1;
     if(!window.__headless&&rnd()<.8)fxp.push({x:o.x,y:o.y,vx:(rnd()-.5)*40,vy:(rnd()-.5)*40,life:.3,max:.3,color:o.color,size:5,g:0,shape:'c',rot:0,vr:0});
     if(t>=1){
-      orbs.splice(i,1);paintPart(o.part);sfx.paint();
+      orbs.splice(i,1);if(o.part.painted)paintPart(o.part);sfx.paint();
       if(!window.__headless){burst(o.x1,o.y1,o.color,14,190,4);floats.push({x:o.x1,y:o.y1-8,text:o.part.pct+'%',life:1.1,max:1.1,pct:true})}
       if(o.last)finish(true);
     }
@@ -2044,8 +2165,11 @@ function update(dt){
     G.t+=dt;pvpStep(dt);
     if(G.fx.reveal>0){G.fx.reveal=Math.max(0,G.fx.reveal-dt)}
     if(G.fx.slow>0){G.fx.slow=Math.max(0,G.fx.slow-dt)}
+    for(const k of['freeze','turbo','fog','lock'])if(G.fx[k]>0)G.fx[k]=Math.max(0,G.fx[k]-dt);
+    if(G.introSec>0)G.introSec=Math.max(0,G.introSec-dt);
+    if(G.fx.freeze>0||G.fx.turbo>0||G.fx.fog>0||G.fx.lock>0||G.fxSig||G.introSec>0)refreshFx();
     const act=G.fx.reveal>0||G.fx.slow>0;if(act||G.pwWas)refreshPowers();G.pwWas=act;
-    if(G.lvl.timed&&!G.cleared){
+    if(G.limit>0&&!G.cleared){
       const before=Math.ceil(G.time);G.time-=dt;
       if(Math.ceil(G.time)!==before){setScore();if(G.time<=10&&G.time>0)sfx.tick()}
       if(G.time<=0){G.time=0;setScore();timeUp()}
@@ -2062,7 +2186,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-11-02.3'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-11-02.4'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
@@ -2094,7 +2218,7 @@ normalizeSave();renderMenu();showTab('home');showScreen('menu');startProfile();
 requestAnimationFrame(frame);
 
 // small hook for automated play-testing
-window.__cr={G,save,needed,renderTop,renderHome,goSide,openSettings,openProfile,openWelcome,saveProfile,specialLeft,renderDock,AVATARS,paintPart,coinsFor,gemsFor,pvpCoins,buyChest,buyPower,equipSkin,showTab,renderShop,openModal,closeModal,startPvp,makeBot,normalizeSave,shopState,dayStr,POWER_PRICE,POWER_DAILY,CHEST_COINS,CHEST_GEMS,SK,SKIN_IDS,skinSvg,PIC_PARTS,PIC_ORDER,usefulFrac,TRACKS,TRACK_TIERS,makeTrack,levelDef,makePool,getPicture,startLevel,tapBall,update,toMenu,usePower,POWERS,renderMenu,pauseGame,resume,nextOpen,cdist,PKEYS,persist,
+window.__cr={triggerTrap,unpaintParts,trapsFor,TRAP_PLAN,TRAPS,rollTrap,G,save,needed,renderTop,renderHome,goSide,openSettings,openProfile,openWelcome,saveProfile,specialLeft,renderDock,AVATARS,paintPart,coinsFor,gemsFor,pvpCoins,buyChest,buyPower,equipSkin,showTab,renderShop,openModal,closeModal,startPvp,makeBot,normalizeSave,shopState,dayStr,POWER_PRICE,POWER_DAILY,CHEST_COINS,CHEST_GEMS,SK,SKIN_IDS,skinSvg,PIC_PARTS,PIC_ORDER,usefulFrac,TRACKS,TRACK_TIERS,makeTrack,levelDef,makePool,getPicture,startLevel,tapBall,update,toMenu,usePower,POWERS,renderMenu,pauseGame,resume,nextOpen,cdist,PKEYS,persist,
   step(sec){for(let t=0;t<sec;t+=1/60)update(1/60)},
   skip:skipCountdown,
   bot(sec,{mistake=false}={}){
