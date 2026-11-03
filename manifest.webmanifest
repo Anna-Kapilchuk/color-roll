@@ -1,9 +1,9 @@
 {
-  "name": "גלגול צבעים",
-  "short_name": "גלגול צבעים",
-  "description": "משחק צבעים: מתגלגלים, מצביעים ומשלימים את הציור",
-  "lang": "he",
-  "dir": "rtl",
+  "name": "Color Roll",
+  "short_name": "Color Roll",
+  "description": "A color game: roll, tap and complete the picture",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -11,8 +11,23 @@
   "background_color": "#f3ead9",
   "theme_color": "#f3ead9",
   "icons": [
-    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
-    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
-    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

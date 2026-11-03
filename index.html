@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>גלגול צבעים</title>
+<title>Color Roll</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#f3ead9">
 <link rel="manifest" href="manifest.webmanifest">
@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="גלגול צבעים">
+<meta name="apple-mobile-web-app-title" content="Color Roll">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap">
@@ -712,9 +712,17 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
 .cpw img{width:62px;height:62px}
 .cclock{font:800 34px var(--display);padding:12px 22px;border-radius:20px;background:rgba(90,66,30,.1)}
 .pw.later{filter:grayscale(1) brightness(.9);opacity:.55}
+
+/* languages: buttons, and the mirrored arrows when the page runs left to right */
+.langrow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.langb{border:0;border-radius:99px;padding:7px 12px;font:700 13px var(--body);background:var(--canvas);color:var(--ink-soft);cursor:pointer;box-shadow:inset 0 0 0 1px var(--line)}
+.langb.on{background:var(--ink);color:#fff}
+.setrow.lang{flex-direction:column;align-items:stretch;gap:8px}
+#app[dir=ltr] .back svg,#app[dir=ltr] .pager svg{transform:scaleX(-1)}
+#app[dir=ltr] .pagebar{padding-top:16px}
 </style>
 
-<div id="app" dir="rtl" lang="he">
+<div id="app" dir="ltr" lang="en">
 
   <main id="menu" class="screen">
     <div class="homescene" id="secHome">
@@ -748,30 +756,30 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
     </div>
     <header class="topbar">
       <div class="tl">
-        <button id="profBtn" class="avbtn" type="button" aria-label="פרופיל">
+        <button id="profBtn" class="avbtn" type="button" data-ta="profile">
           <span class="av" id="profAv"></span>
           <span class="vh"><b id="profName"></b><small id="profStars"></small></span>
         </button>
       </div>
       <div class="wallet">
-        <button id="coinBtn" class="pill" type="button" aria-label="מטבעות"><span id="coinIco" class="pico"></span><b id="coinCnt">0</b><i class="plus">+</i></button>
-        <button id="gemBtn" class="pill gem" type="button" aria-label="יהלומים"><span id="gemIco" class="pico"></span><b id="gemCnt">0</b></button>
+        <button id="coinBtn" class="pill" type="button" data-ta="coins"><span id="coinIco" class="pico"></span><b id="coinCnt">0</b><i class="plus">+</i></button>
+        <button id="gemBtn" class="pill gem" type="button" data-ta="gems"><span id="gemIco" class="pico"></span><b id="gemCnt">0</b></button>
       </div>
     </header>
     <div class="pagebar" id="pagebar" hidden>
-      <button id="backBtn" class="back" type="button" aria-label="חזרה"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#1b1e45" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button id="backBtn" class="back" type="button" data-ta="back"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="#1b1e45" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <h2 id="pageTitle"></h2>
     </div>
 
     <div class="hub-scroll" id="hubScroll" hidden>
       <section id="secLevels" class="sec">
         <div class="wrap">
-          <div class="seg" role="tablist" aria-label="מצב משחק">
-            <button id="tabC" type="button" role="tab">רגיל<small>200 שלבים</small></button>
-            <button id="tabT" type="button" role="tab">נגד הזמן<small>50 שלבים · 2 פסילות</small></button>
+          <div class="seg" role="tablist" data-ta="gameMode">
+            <button id="tabC" type="button" role="tab"><span data-t="tabRegular"></span><small id="tabCsub"></small></button>
+            <button id="tabT" type="button" role="tab"><span data-t="tabTimed"></span><small data-t="timedSub"></small></button>
           </div>
           <div class="sect"><div><b id="secTitle"></b> <small id="starTotal"></small></div>
-            <div class="pager"><button id="pgPrev" class="iconbtn" type="button" aria-label="העמוד הקודם"><svg viewBox="0 0 20 20"><path d="M7 4l6 6-6 6" fill="none" stroke="#1b1e45" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span id="pgLabel" style="direction:ltr;unicode-bidi:isolate"></span><button id="pgNext" class="iconbtn" type="button" aria-label="העמוד הבא"><svg viewBox="0 0 20 20"><path d="M13 4l-6 6 6 6" fill="none" stroke="#1b1e45" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+            <div class="pager"><button id="pgPrev" class="iconbtn" type="button" data-ta="prevPage"><svg viewBox="0 0 20 20"><path d="M7 4l6 6-6 6" fill="none" stroke="#1b1e45" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span id="pgLabel" style="direction:ltr;unicode-bidi:isolate"></span><button id="pgNext" class="iconbtn" type="button" data-ta="nextPage"><svg viewBox="0 0 20 20"><path d="M13 4l-6 6 6 6" fill="none" stroke="#1b1e45" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           </div>
           <div id="grid" class="grid"></div>
           <div class="tools">
@@ -785,29 +793,29 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
         <div class="wrap">
           <div class="card2">
             <div class="pvpart" id="pvpArt"></div>
-            <h2>קרב מהיר</h2>
-            <p>מי משלים את הציור קודם? אותו שלב לשניכם, אותו מסלול, ומי שמסיים ראשון מנצח. שלוש פסילות מוציאות אתכם מהקרב.</p>
+            <h2 data-t="quickBattle"></h2>
+            <p data-t="pvpIntro"></p>
             <div class="statrow" id="pvpStats"></div>
             <div class="rewardline" id="pvpReward"></div>
-            <button id="pvpBtn" class="btn red" type="button">חפשו יריב</button>
-            <p class="shop-note" id="pvpNote">אם אין שחקן פנוי, תתמודדו מול בוט.</p>
+            <button id="pvpBtn" class="btn red" type="button" data-t="findOpp"></button>
+            <p class="shop-note" id="pvpNote" data-t="pvpNote"></p>
           </div>
         </div>
       </section>
 
       <section id="secShop" class="sec" hidden>
         <div class="wrap">
-          <div class="stabs" id="stabs" hidden role="tablist" aria-label="חנות">
-            <button type="button" role="tab" data-st="chests">תיבות</button>
-            <button type="button" role="tab" data-st="skins">כדורים</button>
-            <button type="button" role="tab" data-st="power">כלי עזר</button>
+          <div class="stabs" id="stabs" hidden role="tablist" data-ta="shop">
+            <button type="button" role="tab" data-st="chests" data-t="tabChests"></button>
+            <button type="button" role="tab" data-st="skins" data-t="tabBalls"></button>
+            <button type="button" role="tab" data-st="power" data-t="tabPower"></button>
           </div>
           <div id="shopBody" class="sbody"></div>
         </div>
       </section>
     </div>
 
-    <nav class="dock" id="nav" aria-label="המשך">
+    <nav class="dock" id="nav" data-ta="resume">
       <button type="button" class="dockinfo" id="dockInfo"></button>
       <button id="playBtn" class="btn primary dockmain" type="button"></button>
     </nav>
@@ -816,17 +824,17 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
   <main id="game" class="screen" hidden>
     <div class="wrap" id="gwrap">
       <div class="hud" id="hud">
-        <button id="pauseBtn" class="iconbtn" type="button" aria-label="הפסקה"><svg viewBox="0 0 20 20"><rect x="4" y="3" width="4" height="14" rx="1.5" fill="#1b1e45"/><rect x="12" y="3" width="4" height="14" rx="1.5" fill="#1b1e45"/></svg></button>
+        <button id="pauseBtn" class="iconbtn" type="button" data-ta="pauseT"><svg viewBox="0 0 20 20"><rect x="4" y="3" width="4" height="14" rx="1.5" fill="#1b1e45"/><rect x="12" y="3" width="4" height="14" rx="1.5" fill="#1b1e45"/></svg></button>
         <div class="hud-mid">
           <div class="hud-row"><span class="hud-title" id="hudTitle"></span><span class="score" id="score"></span></div>
           <div class="bar"><i id="bar"></i></div>
           <div class="opp" id="oppRow" hidden><span class="opp-name" id="oppName"></span><div class="bar"><i id="oppBar"></i></div></div>
         </div>
-        <div class="hearts" id="hearts" aria-label="פסילות שנותרו"></div>
+        <div class="hearts" id="hearts" data-ta="livesLeft"></div>
       </div>
       <div class="chips" id="chips"></div>
-      <div class="pic"><div class="card" id="card"><svg id="art" viewBox="0 0 300 300" role="img" aria-label="הציור לצביעה"></svg></div></div>
-      <div class="trackwrap idle" id="trackwrap"><svg id="track" viewBox="0 0 400 260" aria-label="מסלול הכדורים"></svg></div>
+      <div class="pic"><div class="card" id="card"><svg id="art" viewBox="0 0 300 300" role="img" data-ta="artAria"></svg></div></div>
+      <div class="trackwrap idle" id="trackwrap"><svg id="track" viewBox="0 0 400 260" data-ta="trackAria"></svg></div>
       <div class="powers" id="powers"></div>
     </div>
     <div class="flash" id="flash"></div>
@@ -841,7 +849,7 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
       <div class="eyebrow" id="rNum"></div>
       <h2 id="rName"></h2>
       <p id="rTip"></p>
-      <button class="btn primary" id="goBtn" type="button">יאללה, מתחילים</button>
+      <button class="btn primary" id="goBtn" type="button" data-t="letsGo"></button>
     </div>
 
     <div class="sheet" id="end" hidden>
@@ -855,13 +863,13 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
 
     <div class="dim" id="pauseDim" hidden></div>
     <div class="sheet" id="pause" hidden>
-      <div class="eyebrow">הפסקה</div>
-      <h2>רגע לנשום</h2>
-      <div class="row"><button class="btn primary" id="resumeBtn" type="button">המשך</button></div>
+      <div class="eyebrow" data-t="pauseT"></div>
+      <h2 data-t="breathe"></h2>
+      <div class="row"><button class="btn primary" id="resumeBtn" type="button" data-t="resume"></button></div>
       <div class="row">
-        <button class="btn small" id="restartBtn" type="button">מההתחלה</button>
+        <button class="btn small" id="restartBtn" type="button" data-t="restart"></button>
         <button class="btn small" id="soundBtn2" type="button"></button>
-        <button class="btn small" id="menuBtn" type="button">תפריט</button>
+        <button class="btn small" id="menuBtn" type="button" data-t="menuT"></button>
       </div>
     </div>
   </main>
@@ -874,6 +882,276 @@ body::before{background:radial-gradient(60% 40% at 100% 0%,rgba(170,200,170,.55)
 'use strict';
 const NS='http://www.w3.org/2000/svg';
 const rnd=()=>window.__rng?window.__rng():Math.random(); // __rng: seeded generator used by the bot tests
+/* ================= languages: English (default), Russian, Hebrew ================= */
+const LANGS=['en','ru','he'];
+const LANG=(()=>{try{const l=localStorage.getItem('cr_lang');if(LANGS.includes(l))return l}catch(e){}return 'en'})();
+const LI=['he','en','ru'].indexOf(LANG);
+const LOCALE={he:'he-IL',en:'en-US',ru:'ru-RU'}[LANG];
+const RTL=LANG==='he';
+const rp=(n,a,b,c)=>{const m=n%100,d=n%10;return m>10&&m<20?c:d===1?a:d>1&&d<5?b:c}; // Russian plural form
+/* every text of the game: key -> [Hebrew, English, Russian]; a value may be a function of the parameters */
+const STR={
+title:['גלגול צבעים','Color Roll','Цветные шарики'],
+profile:['פרופיל','Profile','Профиль'],
+coins:['מטבעות','Coins','Монеты'],
+gems:['יהלומים','Gems','Алмазы'],
+back:['חזרה','Back','Назад'],
+gameMode:['מצב משחק','Game mode','Режим игры'],
+tabRegular:['רגיל','Regular','Обычный'],
+tabTimed:['נגד הזמן','Against the clock','На время'],
+nLevels:[a=>a.n+' שלבים',a=>a.n+' levels',a=>a.n+' '+rp(a.n,'уровень','уровня','уровней')],
+timedSub:['50 שלבים · 2 פסילות','50 levels · 2 lives','50 уровней · 2 жизни'],
+prevPage:['העמוד הקודם','Previous page','Предыдущая страница'],
+nextPage:['העמוד הבא','Next page','Следующая страница'],
+quickBattle:['קרב מהיר','Quick battle','Быстрый бой'],
+pvpIntro:['מי משלים את הציור קודם? אותו שלב לשניכם, אותו מסלול, ומי שמסיים ראשון מנצח. שלוש פסילות מוציאות אתכם מהקרב.','Who finishes the picture first? The same level and the same track for both of you, and whoever finishes first wins. Three mistakes and you are out of the battle.','Кто первым закончит картинку? Один уровень и одна дорожка на двоих, побеждает тот, кто закончит первым. Три ошибки, и вы выбываете из боя.'],
+findOpp:['חפשו יריב','Find an opponent','Найти соперника'],
+pvpNote:['אם אין שחקן פנוי, תתמודדו מול בוט.','If no player is free, you will face a bot.','Если свободных игроков нет, вы сыграете с ботом.'],
+shop:['חנות','Shop','Магазин'],
+tabChests:['תיבות','Chests','Сундуки'],
+tabBalls:['כדורים','Balls','Шарики'],
+tabPower:['כלי עזר','Power-ups','Бонусы'],
+resume:['המשך','Resume','Продолжить'],
+pauseT:['הפסקה','Pause','Пауза'],
+breathe:['רגע לנשום','Take a breath','Давайте передохнём'],
+restart:['מההתחלה','Restart','Заново'],
+menuT:['תפריט','Menu','Меню'],
+livesLeft:['פסילות שנותרו','Lives left','Осталось жизней'],
+artAria:['הציור לצביעה','The picture to color','Картинка для раскрашивания'],
+trackAria:['מסלול הכדורים','The ball track','Дорожка шариков'],
+letsGo:['יאללה, מתחילים',"Let's go!",'Поехали!'],
+trapTip_ice:['מלכודת חדשה: כדור עם סימן קרח. לחיצה עליו מקפיאה את המסך לכמה שניות, ואי אפשר ללחוץ.','New trap: a ball with an ice mark. Tapping it freezes the screen for a few seconds, and you cannot tap.','Новая ловушка: шарик со значком льда. Если нажать на него, экран замёрзнет на пару секунд, и нажимать будет нельзя.'],
+trapTip_erase:['מלכודת חדשה: כדור עם מחק. לחיצה עליו מוחקת חלקים מהציור שכבר צבעתם.','New trap: a ball with an eraser. Tapping it erases parts of the picture you already painted.','Новая ловушка: шарик с ластиком. Нажатие на него стирает уже закрашенные части картинки.'],
+trapTip_sand:['מלכודת חדשה: כדור עם שעון חול. לחיצה עליו מורידה שניות מהשעון.','New trap: a ball with an hourglass. Tapping it takes seconds off the clock.','Новая ловушка: шарик с песочными часами. Нажатие на него отнимает секунды у таймера.'],
+trapTip_turbo:['מלכודת חדשה: כדור עם ברק. לחיצה עליו מאיצה את כל הכדורים לכמה שניות.','New trap: a ball with a lightning bolt. Tapping it speeds up all the balls for a few seconds.','Новая ловушка: шарик с молнией. Нажатие на него ускоряет все шарики на несколько секунд.'],
+trapTip_fog:['מלכודת חדשה: כדור עם ענן. לחיצה עליו מכסה את הכדורים בערפל אפור לכמה שניות.','New trap: a ball with a cloud. Tapping it covers the balls in grey fog for a few seconds.','Новая ловушка: шарик с облаком. Нажатие на него накрывает шарики серым туманом на несколько секунд.'],
+trapTip_lock:['מלכודת חדשה: כדור עם מנעול. לחיצה עליו נועלת את כלי העזר לכמה שניות.','New trap: a ball with a padlock. Tapping it locks your power-ups for a few seconds.','Новая ловушка: шарик с замком. Нажатие на него блокирует бонусы на несколько секунд.'],
+kind_mini:['מיני-בוס','Mini-boss','Мини-босс'],
+kind_boss:['בוס','Boss','Босс'],
+tipBoss:['בוס! קשה יותר מהשלבים שלפניו: מהיר יותר וצבעים דומים מאוד. אפשר להשתמש בכלי העזר.','Boss! Harder than the levels before it: faster, with very similar colors. You can use power-ups.','Босс! Сложнее прежних уровней: быстрее и с очень похожими цветами. Можно использовать бонусы.'],
+tipMini:['מיני-בוס: קצת יותר קשה מהשלבים שלפניו.','Mini-boss: a little harder than the levels before it.','Мини-босс: немного сложнее предыдущих уровней.'],
+tipTimed:['מרוץ נגד השעון. אותו ציור, אבל קשה יותר, יש רק 2 פסילות והזמן נגמר. כוכבים לפי המהירות שלכם.','A race against the clock. Same pictures, but harder: only 2 lives, and the time runs out. Stars depend on your speed.','Гонка со временем. Те же картинки, но сложнее: всего 2 жизни, и время ограничено. Звёзды зависят от скорости.'],
+tip1:['לחצו על כדור בצבע שמופיע חלש בציור. כדור בצבע לא נכון עולה לכם בלב. יש שעון: כשהזמן נגמר השלב נכשל. הכפתורים בצד הם כלי עזר.','Tap a ball in a color that shows faintly in the picture. A ball in the wrong color costs you a heart. There is a clock: when time runs out the level fails. The buttons at the side are power-ups.','Нажимайте на шарик того цвета, который бледно виден на картинке. Шарик не того цвета отнимает сердечко. Есть таймер: когда время выходит, уровень проигран. Кнопки сбоку — это бонусы.'],
+tip2:['אזור גדול מתמלא באחוזים: כל כדור נכון מוסיף עוד חלק מהאזור, עד 100%. הטבעת סביב העיגול מראה כמה מהצבע כבר מולא.','A large area fills up in percentages: every correct ball adds more of the area, up to 100%. The ring around the circle shows how much of the color is already filled.','Большая область заполняется в процентах: каждый верный шарик добавляет часть области, пока не наберётся 100%. Кольцо вокруг кружка показывает, сколько цвета уже заполнено.'],
+tip3:['העיגולים למעלה מראים כמה לחיצות נשארו בכל צבע. כדור בצבע שכבר גמרתם נחשב טעות.','The circles on top show how many taps are left for each color. A ball in a color you already finished counts as a mistake.','Кружки сверху показывают, сколько нажатий осталось для каждого цвета. Шарик уже завершённого цвета считается ошибкой.'],
+tipA:['לחצו רק על צבעים שהציור עדיין צריך. אפשר להשתמש בהארה כשקשה למצוא.','Tap only the colors the picture still needs. Use the spotlight when it is hard to find them.','Нажимайте только на те цвета, которые ещё нужны картинке. Если трудно найти, используйте подсветку.'],
+tipB:['הכדורים בצבעים דומים יופיעו יותר ויותר. השוו עם העיגולים למעלה.','Balls in similar colors will appear more and more. Compare with the circles on top.','Шариков похожих цветов будет всё больше. Сравнивайте с кружками сверху.'],
+tipC:['המהירות משתנה לאורך הדרך, והכדורים הדומים קרובים מאוד בצבע.','The speed changes along the way, and the similar balls are very close in color.','Скорость меняется по ходу пути, а похожие шарики почти неотличимы по цвету.'],
+tipD:['שלב קשה: מהיר, דחוס, וכמעט כל כדור הוא מלכודת. כלי העזר שווים עכשיו זהב.','A hard level: fast, crowded, and almost every ball is a trap. Power-ups are worth gold now.','Сложный уровень: быстро, тесно, и почти каждый шарик — ловушка. Бонусы сейчас на вес золота.'],
+pw_reveal:['הארה','Spotlight','Подсветка'],
+pw_reveal_d:['10 שניות','10 seconds','10 секунд'],
+pw_reveal_l:['מאירה את הכדורים שהציור צריך ומעמעמת את כל השאר, ל-10 שניות.','Lights up the balls the picture needs and dims all the others, for 10 seconds.','Подсвечивает нужные картинке шарики и затемняет остальные на 10 секунд.'],
+pw_slow:['האטה','Slow down','Замедление'],
+pw_slow_d:['8 שניות','8 seconds','8 секунд'],
+pw_slow_l:['מקפיאה את המסלול ומאטה את כל הכדורים, ל-8 שניות.','Freezes the track and slows down all the balls, for 8 seconds.','Замораживает дорожку и замедляет все шарики на 8 секунд.'],
+pw_brush:['קסם','Magic','Магия'],
+pw_brush_d:['3 חלקים','3 parts','3 части'],
+pw_brush_l:['מטה קסמים שצובע 3 חלקים בציור בבת אחת.','A magic wand that paints 3 parts of the picture at once.','Волшебная палочка, которая закрашивает сразу 3 части картинки.'],
+tier_common:['רגיל','Common','Обычный'],
+tier_rare:['נדיר','Rare','Редкий'],
+tier_epic:['אפי','Epic','Эпический'],
+noGems:['אין מספיק יהלומים','Not enough gems','Недостаточно алмазов'],
+noCoins:['אין מספיק מטבעות','Not enough coins','Недостаточно монет'],
+opening:['פותחים את התיבה...','Opening the chest...','Открываем сундук...'],
+gotBall:['קיבלתם כדור חדש!','You got a new ball!','Новый шарик!'],
+newBallNote:['הכדור החדש מחליף את כל הכדורים במשחק, בכל הצבעים.','The new ball replaces all the balls in the game, in every color.','Новый шарик заменит все шарики в игре во всех цветах.'],
+equip:['הלבישו','Equip','Надеть'],
+closeB:['סגרו','Close','Закрыть'],
+dailyLimit:['הגעתם למגבלה היומית','You reached the daily limit','Вы достигли дневного лимита'],
+stockFull:['המלאי מלא','The stock is full','Запас полон'],
+inChests:['כדור זה נמצא בתיבות, אפשר לקנות תיבה בחנות','This ball is in the chests, you can buy a chest in the shop','Этот шарик лежит в сундуках, сундук можно купить в магазине'],
+shopT_chests:['תיבות','Chests','Сундуки'],
+shopT_skins:['הכדורים שלכם','Your balls','Ваши шарики'],
+shopT_power:['כלי עזר','Power-ups','Бонусы'],
+allCollected:[a=>`אספתם את כל ${a.n} הכדורים!`,a=>`You collected all ${a.n} balls!`,a=>`Вы собрали все ${a.n} шариков!`],
+leftToFind:[a=>`נותרו ${a.left} כדורים לגלות מתוך ${a.n}`,a=>`${a.left} of ${a.n} balls left to discover`,a=>`Осталось открыть: ${a.left} из ${a.n}`],
+chestBasic:['תיבת כדורים','Ball chest','Сундук с шариками'],
+chestBasicD:['כדור אחד חדש, באקראי. הכדור מחליף את כל הכדורים במשחק.','One new ball, at random. The ball replaces all the balls in the game.','Один новый шарик, случайный. Он заменит все шарики в игре.'],
+chestPrem:['תיבת קריסטל','Crystal chest','Хрустальный сундук'],
+chestPremD:['כדור נדיר או אפי, מובטח.','A rare or epic ball, guaranteed.','Гарантированно редкий или эпический шарик.'],
+earnNote:['מטבעות מקבלים על כל ניצחון, ויהלום על שלושה כוכבים.','You get coins for every win, and a gem for three stars.','Монеты даются за каждую победу, а алмаз — за три звезды.'],
+skinNote:['הכדור שתבחרו יחליף את כל הכדורים, בכל הצבעים.','The ball you choose replaces all the balls, in every color.','Выбранный шарик заменит все шарики во всех цветах.'],
+previewRow:['תצוגה: כל הכדורים פתוחים','Preview: all balls unlocked','Просмотр: все шарики открыты'],
+on:['פועל','On','Вкл'],
+off:['כבוי','Off','Выкл'],
+lockedAria:['נעול','locked','закрыт'],
+selected:['נבחר','Selected','Выбран'],
+dailyNote:['כמות מוגבלת בכל יום. המכסה מתחדשת בחצות.','A limited amount each day. The limit renews at midnight.','Количество ограничено на каждый день. Лимит обновляется в полночь.'],
+inStock:[a=>`במלאי: ${a.n}`,a=>`In stock: ${a.n}`,a=>`В запасе: ${a.n}`],
+leftToday:[a=>`נותרו היום ${a.left} מתוך ${a.max}`,a=>`${a.left} of ${a.max} left today`,a=>`Сегодня осталось ${a.left} из ${a.max}`],
+previewOn:['כל הכדורים פתוחים לניסיון','All the balls are unlocked to try','Все шарики открыты для пробы'],
+previewOff:['חזרה לכדורים שאספתם','Back to the balls you collected','Снова только собранные шарики'],
+ptLevels:['שלבים','Levels','Уровни'],
+ptBattle:['קרב','Battle','Бой'],
+mClock:['שעון','Clock','Время'],
+mLevel:['שלב','Level','Уровень'],
+startB:['התחילו','Start','Начать'],
+vs:['נגד','vs','против'],
+statWins:['ניצחונות','Wins','Победы'],
+statLosses:['הפסדים','Losses','Поражения'],
+statRate:['אחוז ניצחון','Win rate','Процент побед'],
+winPrize:['פרס על ניצחון:','Win reward:','Награда за победу:'],
+prizeByLevel:['מטבעות לפי השלב שלכם','coins based on your level','монеты в зависимости от уровня'],
+nav_pvp:['קרב','Battle','Бой'],
+nav_chests:['תיבות','Chests','Сундуки'],
+nav_skins:['כדורים','Balls','Шарики'],
+nav_power:['כלי עזר','Power-ups','Бонусы'],
+nav_levels:['שלבים','Levels','Уровни'],
+nav_timed:['שעון','Clock','Время'],
+dockLeft:[a=>`נותרו ${a.n} פריטים מיוחדים בחנות היום`,a=>`${a.n} special items left in the shop today`,a=>`Сегодня в магазине осталось особых предметов: ${a.n}`],
+dockNone:['קניתם היום את כל הפריטים המיוחדים','You bought all the special items today','Сегодня вы купили все особые предметы'],
+player:['שחקן','Player','Игрок'],
+avPic:['תמונת פרופיל','Profile picture','Фото профиля'],
+avColor:['צבע','Color','Цвет'],
+welcome:['ברוכים הבאים!','Welcome!','Добро пожаловать!'],
+welcomeP:['איך קוראים לך? השם נשמר במכשיר, כך שהמשחק יזכור אותך בפעם הבאה.','What is your name? The name is saved on this device, so the game remembers you next time.','Как вас зовут? Имя сохраняется на этом устройстве, и игра запомнит вас в следующий раз.'],
+yourName:['השם שלך','Your name','Ваше имя'],
+letsStart:['בואו נתחיל',"Let's begin",'Начнём'],
+nice:[a=>`נעים להכיר, ${a.name}`,a=>`Nice to meet you, ${a.name}`,a=>`Приятно познакомиться, ${a.name}`],
+welcomeBack:[a=>`ברוכים השבים, ${a.name}`,a=>`Welcome back, ${a.name}`,a=>`С возвращением, ${a.name}`],
+closeAria:['סגירה','Close','Закрыть'],
+playerNameAria:['שם השחקן','Player name','Имя игрока'],
+levelsDone:['שלבים הושלמו','Levels completed','Уровней пройдено'],
+starsW:['כוכבים','Stars','Звёзды'],
+pvpWins:['ניצחונות בקרב','Battle wins','Побед в боях'],
+joined:[a=>`מצטרפים מ-${a.d}. `,a=>`Joined ${a.d}. `,a=>`С нами с ${a.d}. `],
+savedNote:['ההתקדמות נשמרת במכשיר הזה.','Your progress is saved on this device.','Прогресс сохраняется на этом устройстве.'],
+googleB:['התחברות עם Google','Sign in with Google','Войти через Google'],
+soon:['בקרוב','Soon','Скоро'],
+settings:['הגדרות','Settings','Настройки'],
+explain:['הסברים','Explanations','Подсказки'],
+showAgain:['הצגה מחדש','Show again','Показать снова'],
+helpAgain:['ההסברים יופיעו שוב בפעם הבאה שתתחילו שלב','The explanations will appear again the next time you start a level','Подсказки появятся снова при следующем запуске уровня'],
+language:['שפה','Language','Язык'],
+versionRow:[a=>`גרסה ${a.v}`,a=>`Version ${a.v}`,a=>`Версия ${a.v}`],
+devBuild:['לבדיקות','test build','тестовая'],
+checkUpd:['בדיקת עדכון','Check for updates','Проверить обновление'],
+saveB:['שמירה','Save','Сохранить'],
+soundOn:['צליל: פועל','Sound: on','Звук: вкл'],
+soundOff:['צליל: כבוי','Sound: off','Звук: выкл'],
+soundOn2:['צליל פועל','Sound on','Звук включён'],
+soundOff2:['צליל כבוי','Sound off','Звук выключен'],
+lvAria:[a=>`שלב ${a.n}${a.kind?', '+a.kind:''}${a.trap?', מלכודת חדשה: '+a.trap:''}, ${a.s} כוכבים`,a=>`Level ${a.n}${a.kind?', '+a.kind:''}${a.trap?', new trap: '+a.trap:''}, ${a.s} stars`,a=>`Уровень ${a.n}${a.kind?', '+a.kind:''}${a.trap?', новая ловушка: '+a.trap:''}, звёзд: ${a.s}`],
+newTrapName:[a=>`מלכודת חדשה: ${a.name}`,a=>`New trap: ${a.name}`,a=>`Новая ловушка: ${a.name}`],
+starsTotal:[a=>`${a.a} / ${a.b} כוכבים`,a=>`${a.a} / ${a.b} stars`,a=>`${a.a} / ${a.b} звёзд`],
+lvInfoT:['אותם ציורים, קשה יותר, שעון צמוד ומלכודות','The same pictures, harder, with a tight clock and traps','Те же картинки, но сложнее: жёсткий таймер и ловушки'],
+lvInfoC:[a=>`${a.n} שלבים · 3 פסילות · שעון בכל שלב`,a=>`${a.n} levels · 3 lives · a clock on every level`,a=>`${a.n} ${rp(a.n,'уровень','уровня','уровней')} · 3 жизни · таймер на каждом уровне`],
+pvpTip:['קרב מהיר! מי שמשלים את הציור קודם מנצח.','Quick battle! Whoever finishes the picture first wins.','Быстрый бой! Побеждает тот, кто первым закончит картинку.'],
+hudBattle:['קרב · שלב','Battle · Level','Бой · Уровень'],
+botTag:['בוט','bot','бот'],
+vsOppTitle:[a=>`קרב מול ${a.name}`,a=>`Battle vs ${a.name}`,a=>`Бой с игроком ${a.name}`],
+loadFail:['לא הצלחתי לטעון',"Couldn't load",'Не удалось загрузить'],
+loadFailTip:['בדקו את החיבור לאינטרנט ונסו שוב.','Check your internet connection and try again.','Проверьте подключение к интернету и попробуйте снова.'],
+tryAgain:['נסו שוב','Try again','Попробовать снова'],
+pts:['נק׳','pts','очк.'],
+laterFrom:[a=>`משלב ${a.n}`,a=>`from level ${a.n}`,a=>`с уровня ${a.n}`],
+unlocksAt:[a=>`${a.name} נפתח בשלב ${a.n}`,a=>`${a.name} unlocks at level ${a.n}`,a=>`${a.name}: откроется на уровне ${a.n}`],
+trap_ice:['הקפאה','Freeze','Заморозка'],
+trap_erase:['מחק','Eraser','Ластик'],
+trap_sand:['שעון חול','Hourglass','Песочные часы'],
+trap_turbo:['מהירות','Speed','Скорость'],
+trap_fog:['ערפל','Fog','Туман'],
+trap_lock:['מנעול','Padlock','Замок'],
+ban_ice:['הקפאה! אי אפשר ללחוץ','Frozen! You cannot tap','Заморозка! Нажимать нельзя'],
+ban_turbo:['הכדורים מהירים יותר','The balls are faster','Шарики быстрее'],
+ban_fog:['ערפל','Fog','Туман'],
+ban_lock:['כלי העזר נעולים','Power-ups are locked','Бонусы заблокированы'],
+fx_ice:['קפוא!','Frozen!','Заморожено!'],
+fx_erased:[a=>`נמחקו ${a.n} חלקים`,a=>`Erased ${a.n} ${a.n===1?'part':'parts'}`,a=>`Стёрто частей: ${a.n}`],
+fx_nothing:['אין מה למחוק','Nothing to erase','Нечего стирать'],
+fx_sand:[a=>`-${a.n} שניות`,a=>`-${a.n} seconds`,a=>`-${a.n} сек.`],
+fx_turbo:['מהר!','Fast!','Быстро!'],
+fx_fog:['ערפל','Fog','Туман'],
+fx_lock:['נעול','Locked','Заблокировано'],
+newTrapBan:[a=>`מלכודת חדשה: ${a.name}. אל תלחצו על כדור עם הסימן`,a=>`New trap: ${a.name}. Do not tap a ball with this mark`,a=>`Новая ловушка: ${a.name}. Не нажимайте на шарик с этим значком`],
+combo:[a=>`רצף ${a.n}`,a=>`Combo ${a.n}`,a=>`Серия ${a.n}`],
+searching:['מחפשים יריב...','Looking for an opponent...','Ищем соперника...'],
+searchingP:[a=>`מחפשים שחקן פנוי בשלב ${a.n}`,a=>`Looking for a free player on level ${a.n}`,a=>`Ищем свободного игрока на уровне ${a.n}`],
+cancel:['ביטול','Cancel','Отмена'],
+oppFound:['נמצא יריב','Opponent found','Соперник найден'],
+noFree:['אין שחקנים פנויים כרגע, אז תתמודדו מול בוט.','No players are free right now, so you will face a bot.','Свободных игроков сейчас нет, поэтому вы сыграете с ботом.'],
+me:['אני','Me','Я'],
+youW:['אתם','You','Вы'],
+botName:[a=>`${a.name} (בוט)`,a=>`${a.name} (bot)`,a=>`${a.name} (бот)`],
+pvpRound:[a=>`שלב ${a.n} · פרס על ניצחון ${a.c} מטבעות`,a=>`Level ${a.n} · win reward ${a.c} coins`,a=>`Уровень ${a.n} · награда за победу: ${a.c} ${rp(a.c,'монета','монеты','монет')}`],
+beatOpp:[a=>`ניצחתם את ${a.name}!`,a=>`You beat ${a.name}!`,a=>`Вы победили: ${a.name}!`],
+oppFirst:['היריב סיים קודם','Your opponent finished first','Соперник закончил первым'],
+outW:['נפסלתם','You are out','Вы выбыли'],
+fastestSub:['הכי מהירים. הפרס שלכם מחכה.','The fastest. Your reward is waiting.','Вы самые быстрые. Награда ждёт.'],
+nextFaster:['פעם הבאה תהיו מהירים יותר.','Be faster next time.','В следующий раз будьте быстрее.'],
+threeMist:['שלוש טעויות והקרב נגמר.','Three mistakes and the battle is over.','Три ошибки, и бой окончен.'],
+yourTime:['הזמן שלכם','Your time','Ваше время'],
+progressOf:[a=>`ההתקדמות של ${a.name}`,a=>`${a.name}'s progress`,a=>`Прогресс: ${a.name}`],
+endPerfect:['ציור מושלם!','A perfect picture!','Идеальная картинка!'],
+endGreat:['כל הכבוד!','Well done!','Отлично!'],
+endOk:['הצלחתם!','You did it!','Получилось!'],
+endTime:['נגמר הזמן',"Time's up",'Время вышло'],
+endLost:['נפסלתם','Out of lives','Жизни закончились'],
+finTimed:['סיימתם את כל שלבי השעון.','You finished all the clock levels.','Вы прошли все уровни на время.'],
+finAll:['סיימתם את כל 200 השלבים. איזה אוסף צבעים.','You finished all 200 levels. What a collection of colors.','Вы прошли все 200 уровней. Какая коллекция цветов!'],
+picDone:['הציור הושלם.','The picture is complete.','Картинка готова.'],
+clockWon:['השעון הקדים אתכם. נסו שוב מהר יותר.','The clock beat you. Try again, faster.','Таймер оказался быстрее. Попробуйте снова, но быстрее.'],
+mistakesEnd:[a=>`${a.k===2?'שתי':'שלוש'} טעויות והסיבוב נגמר. הציור עדיין מחכה לכם.`,a=>`${a.k===2?'Two':'Three'} mistakes and the round is over. The picture is still waiting for you.`,a=>`${a.k===2?'Две':'Три'} ошибки, и раунд окончен. Картинка всё ещё ждёт вас.`],
+score:['ניקוד','Score','Очки'],
+timeW:['זמן','Time','Время'],
+bestCombo:['רצף ארוך','Best combo','Лучшая серия'],
+bestW:['שיא','Best','Рекорд'],
+alreadyPaid:['כבר קיבלתם פרס על תוצאה כזו או טובה יותר','You already got a reward for this result or a better one','Вы уже получили награду за такой или лучший результат'],
+anotherBattle:['קרב נוסף','Another battle','Ещё бой'],
+nextLevel:['לשלב הבא','Next level','Следующий уровень'],
+againB:['שוב','Again','Ещё раз'],
+toMenu:['לתפריט','To the menu','В меню'],
+coachAria:['הסבר','Explanation','Пояснение'],
+nextB:['הבא','Next','Далее'],
+gotIt:['הבנתי','Got it','Понятно'],
+showIce:['המסך קופא לכמה שניות ואי אפשר ללחוץ על שום כדור. הכדורים ממשיכים לרוץ.','The screen freezes for a few seconds and you cannot tap any ball. The balls keep running.','Экран замерзает на пару секунд, и нельзя нажимать ни на один шарик. Шарики продолжают бежать.'],
+showErase:['חלקים שכבר צבעתם נמחקים מהציור, וצריך לצבוע אותם שוב.','Parts you already painted are erased from the picture, and you have to paint them again.','Уже закрашенные части стираются с картинки, и их придётся закрашивать заново.'],
+showSand:['לחיצה עליו מורידה שניות מהשעון.','Tapping it takes seconds off the clock.','Нажатие на него отнимает секунды у таймера.'],
+showTurbo:['כל הכדורים מאיצים לכמה שניות, וקשה יותר לבחור.','All the balls speed up for a few seconds, and it is harder to choose.','Все шарики ускоряются на несколько секунд, и выбирать труднее.'],
+showFog:['הכדורים הופכים אפורים ומטושטשים לכמה שניות, וקשה לזהות צבעים.','The balls turn grey and blurry for a few seconds, and it is hard to tell the colors.','Шарики становятся серыми и размытыми на несколько секунд, и цвета трудно различить.'],
+showLock:['כלי העזר ננעלים לכמה שניות.','The power-ups get locked for a few seconds.','Бонусы блокируются на несколько секунд.'],
+c1t:['ברוכים הבאים!','Welcome!','Добро пожаловать!'],
+c1:['צובעים ציור בעזרת כדורים שרצים על הדרך. כל כדור נכון צובע חלק מהציור.','You paint a picture with balls that run along the road. Every correct ball paints a part of the picture.','Вы раскрашиваете картинку шариками, которые бегут по дороге. Каждый верный шарик закрашивает часть картинки.'],
+c2t:['לוחצים רק על הצבע הנכון','Tap only the right color','Нажимайте только на нужный цвет'],
+c2:['העיגולים למעלה מראים אילו צבעים הציור עדיין צריך, וכמה כדורים נשארו מכל צבע. לחצו רק על כדור בצבע כזה.','The circles on top show which colors the picture still needs, and how many balls are left of each color. Tap only a ball in such a color.','Кружки сверху показывают, какие цвета ещё нужны картинке и сколько шариков осталось каждого цвета. Нажимайте только на шарик такого цвета.'],
+c3t:['טעות עולה בלב','A mistake costs a heart','Ошибка стоит сердечка'],
+c3:['לחיצה על כדור בצבע שהציור לא צריך לוקחת לב. כשנגמרים הלבבות השלב נגמר.','Tapping a ball in a color the picture does not need takes a heart. When the hearts run out, the level is over.','Нажатие на шарик цвета, который картинке не нужен, отнимает сердечко. Когда сердечки заканчиваются, уровень проигран.'],
+c4t:['השעון','The clock','Таймер'],
+c4:['בכל שלב יש שעון. אם הזמן נגמר לפני שהציור מוכן, אפשר לנסות שוב. יש מספיק זמן, אל תילחצו.','Every level has a clock. If time runs out before the picture is ready, you can try again. There is enough time, so do not stress.','В каждом уровне есть таймер. Если время выйдет раньше, чем картинка будет готова, можно попробовать снова. Времени достаточно, не волнуйтесь.'],
+c5t:['נגד הזמן','Against the clock','На время'],
+c5:['אותם ציורים, אבל קשה יותר: שעון צמוד, רק שתי פסילות ומלכודות. כוכבים לפי המהירות.','The same pictures, but harder: a tight clock, only two lives, and traps. Stars depend on speed.','Те же картинки, но сложнее: жёсткий таймер, всего две жизни и ловушки. Звёзды зависят от скорости.'],
+startShort:['מתחילים',"Let's start",'Начинаем'],
+newPwT:[a=>`כלי עזר חדש: ${a.name}`,a=>`New power-up: ${a.name}`,a=>`Новый бонус: ${a.name}`],
+newPwTxt:[a=>`${a.long} הכפתור נמצא בצד המסך. כשנגמר המלאי אפשר לקנות עוד בחנות.`,a=>`${a.long} The button is at the side of the screen. When you run out, you can buy more in the shop.`,a=>`${a.long} Кнопка находится сбоку экрана. Когда запас закончится, можно купить ещё в магазине.`],
+trapMarkTxt:['כדור עם הסימן הזה הוא מלכודת. הוא לא לוקח לב, אבל יש לו אפקט. אל תלחצו עליו!','A ball with this mark is a trap. It does not take a heart, but it has an effect. Do not tap it!','Шарик с таким значком — ловушка. Он не отнимает сердечко, но у него есть эффект. Не нажимайте на него!'],
+whatHappens:['מה קורה אם לוחצים?','What happens if you tap it?','Что будет, если нажать?'],
+tryT:['נסו בעצמכם','Try it yourself','Попробуйте сами'],
+tryTxt:[a=>`בשלב הזה אפשר ללחוץ פעם אחת על כדור עם הסימן (${a.name}) ולראות מה קורה. כאן זה לא נורא. בהמשך זה יהיה קשה יותר, אז כדאי להכיר.`,a=>`On this level you can tap a ball with the mark (${a.name}) once and see what happens. It is fine here. Later it will get harder, so it is good to know it.`,a=>`На этом уровне можно один раз нажать на шарик со значком (${a.name}) и посмотреть, что будет. Здесь это не страшно. Дальше станет сложнее, так что стоит познакомиться.`],
+updAvail:['יש גרסה חדשה של המשחק','A new version of the game is available','Доступна новая версия игры'],
+updB:['עדכון','Update','Обновить'],
+updating:['מעדכנת…','Updating…','Обновляем…'],
+updOnlyApp:['עדכונים עובדים רק באפליקציה המותקנת','Updates only work in the installed app','Обновления работают только в установленном приложении'],
+noNet:['אין חיבור לאינטרנט','No internet connection','Нет подключения к интернету'],
+upToDate:['המשחק מעודכן ✓','The game is up to date ✓','Игра обновлена ✓'],
+};
+const tx=(k,a)=>{const e=STR[k];if(!e)return k;const v=e[LI];return typeof v==='function'?v(a||{}):v};
+const BOT_NAMES_L={
+  he:['נועה','איתי','דנה','יואב','מאיה','אורי','שירה','עומר','ליאור','תמר','גיל','רותם','אלון','הילה','נדב','ספיר','אריאל','ענבר'],
+  en:['Noah','Ethan','Dana','Jake','Maya','Oliver','Shira','Omar','Lily','Tammy','Gil','Ruth','Alon','Hailey','Nate','Sapphire','Ariel','Amber'],
+  ru:['Ноа','Артём','Даша','Яков','Майя','Олег','Шира','Омар','Лиора','Тамара','Гоша','Рита','Алёша','Ника','Надя','Сапфира','Ариэль','Вера']};
+const SKN={candy:['סוכריה','Candy','Конфета'],marble:['גולה','Marble','Стеклянный шарик'],soccer:['כדורגל','Soccer ball','Футбольный мяч'],basketball:['כדורסל','Basketball','Баскетбольный мяч'],tennis:['טניס','Tennis ball','Теннисный мяч'],beach:['כדור חוף','Beach ball','Пляжный мяч'],billiard:['ביליארד','Billiard ball','Бильярдный шар'],button:['כפתור','Button','Пуговица'],dots:['נקודות','Dots','Горошек'],stripes:['פסים','Stripes','Полоски'],donut:['סופגנייה','Donut','Пончик'],yarn:['כדור צמר','Ball of yarn','Клубок'],golf:['כדור גולף','Golf ball','Мяч для гольфа'],bowling:['באולינג','Bowling ball','Шар для боулинга'],lollipop:['סוכריה על מקל','Lollipop','Леденец'],planet:['כוכב לכת','Planet','Планета'],stars:['כוכבים','Stars','Звёзды'],hearts:['לבבות','Hearts','Сердечки'],flower:['פרח','Flower','Цветок'],glitter:['נוצץ','Glitter','Блёстки'],crystal:['קריסטל','Crystal','Кристалл'],disco:['כדור דיסקו','Disco ball','Диско-шар'],neon:['ניאון','Neon','Неон'],pearl:['פנינה','Pearl','Жемчужина'],smiley:['סמיילי','Smiley','Смайлик']};
+
+/* static texts of the page (data-t = text, data-ta = aria-label) */
+function applyStatic(){
+  document.documentElement.lang=LANG;document.documentElement.dir=RTL?'rtl':'ltr';
+  const app=document.getElementById('app');app.lang=LANG;app.dir=RTL?'rtl':'ltr';
+  document.title=tx('title');
+  document.querySelectorAll('[data-t]').forEach(e=>e.textContent=tx(e.dataset.t));
+  document.querySelectorAll('[data-ta]').forEach(e=>e.setAttribute('aria-label',tx(e.dataset.ta)));
+  const cs=document.getElementById('tabCsub');if(cs)cs.textContent=tx('nLevels',{n:200});
+}
+applyStatic();
+
 const TOTAL_C=200,TOTAL_T=50,PER_PAGE=12;
 
 /* ================= storage ================= */
@@ -914,9 +1192,10 @@ function loadPack(k){
   return packs.get(k);
 }
 const flipPath=p=>p.replace(/(-?[\d.]+) (-?[\d.]+)/g,(m,x,y)=>(300-parseFloat(x)).toFixed(1)+' '+y);
+const picNames=LANG==='he'?Promise.resolve({}):fetchJSON('pics/names_'+LANG+'.json').catch(()=>({}));
 async function getPicture(slot){
   if(picCache.has(slot))return picCache.get(slot);
-  const pk=await loadPack(Math.ceil(slot/10)),e=pk[slot];let regs,name=e.n;
+  const pk=await loadPack(Math.ceil(slot/10)),e=pk[slot],pn=await picNames;let regs,name=pn[slot]||e.n;
   if(e.base){const b=await getPicture(e.base);regs=b.regions.map(r=>({p:e.flip?flipPath(r.p):r.p,c:hueRot(r.c,e.hue),n:r.n,dir:r.dir,eo:false}))}
   else regs=e.r.map(r=>({p:r.p,c:r.c,n:r.n,dir:r.d,eo:false}));
   const pic={name,regions:regs,total:regs.reduce((s,r)=>s+r.n,0)};picCache.set(slot,pic);return pic;
@@ -978,13 +1257,7 @@ function trapsFor(plan,n){
   const last=act[act.length-1],[from,solo]=plan[last];
   return{list:n<from+solo?[last]:act,intro:n-from<2?last:'',idx:n-from,newest:last};
 }
-const TRAP_TIP={
-  ice:'מלכודת חדשה: כדור עם סימן קרח. לחיצה עליו מקפיאה את המסך לכמה שניות, ואי אפשר ללחוץ.',
-  erase:'מלכודת חדשה: כדור עם מחק. לחיצה עליו מוחקת חלקים מהציור שכבר צבעתם.',
-  sand:'מלכודת חדשה: כדור עם שעון חול. לחיצה עליו מורידה שניות מהשעון.',
-  turbo:'מלכודת חדשה: כדור עם ברק. לחיצה עליו מאיצה את כל הכדורים לכמה שניות.',
-  fog:'מלכודת חדשה: כדור עם ענן. לחיצה עליו מכסה את הכדורים בערפל אפור לכמה שניות.',
-  lock:'מלכודת חדשה: כדור עם מנעול. לחיצה עליו נועלת את כלי העזר לכמה שניות.'};
+const TRAP_TIP=new Proxy({},{get:(o,k)=>tx('trapTip_'+k)});
 function levelDef(mode,n){
   const timed=mode==='t',cn=timed?n+70:n; // clock levels play like levels 71-120: clearly harder than the regular ones with the same pictures
   // every 5th level is a mini-boss and every 10th a boss: clearly harder than the levels around them.
@@ -1021,18 +1294,18 @@ function levelDef(mode,n){
     redo:n<4?0:lerp(.22,.3,d), // chance that a useless ball repeats a picture colour that is already finished
     tip:tr.intro?TRAP_TIP[tr.intro]:tipFor(d,n,timed,kind)};
 }
-const KIND_NAME={mini:'מיני-בוס',boss:'בוס'};
+const KIND_NAME={mini:tx('kind_mini'),boss:tx('kind_boss')};
 function tipFor(d,n,timed,kind){
-  if(kind==='boss')return'בוס! קשה יותר מהשלבים שלפניו: מהיר יותר וצבעים דומים מאוד. אפשר להשתמש בכלי העזר.';
-  if(kind==='mini')return'מיני-בוס: קצת יותר קשה מהשלבים שלפניו.';
-  if(timed)return'מרוץ נגד השעון. אותו ציור, אבל קשה יותר, יש רק 2 פסילות והזמן נגמר. כוכבים לפי המהירות שלכם.';
-  if(n===1)return'לחצו על כדור בצבע שמופיע חלש בציור. כדור בצבע לא נכון עולה לכם בלב. יש שעון: כשהזמן נגמר השלב נכשל. הכפתורים למטה הם כלי עזר.';
-  if(n===2)return'אזור גדול מתמלא באחוזים: כל כדור נכון מוסיף עוד חלק מהאזור, עד 100%. הטבעת סביב העיגול מראה כמה מהצבע כבר מולא.';
-  if(n===3)return'העיגולים למעלה מראים כמה לחיצות נשארו בכל צבע. כדור בצבע שכבר גמרתם נחשב טעות.';
-  if(d<.15)return'לחצו רק על צבעים שהציור עדיין צריך. אפשר להשתמש בהארה כשקשה למצוא.';
-  if(d<.4)return'הכדורים בצבעים דומים יופיעו יותר ויותר. השוו עם העיגולים למעלה.';
-  if(d<.7)return'המהירות משתנה לאורך הדרך, והכדורים הדומים קרובים מאוד בצבע.';
-  return'שלב קשה: מהיר, דחוס, וכמעט כל כדור הוא מלכודת. כלי העזר שווים עכשיו זהב.';
+  if(kind==='boss')return tx('tipBoss');
+  if(kind==='mini')return tx('tipMini');
+  if(timed)return tx('tipTimed');
+  if(n===1)return tx('tip1');
+  if(n===2)return tx('tip2');
+  if(n===3)return tx('tip3');
+  if(d<.15)return tx('tipA');
+  if(d<.4)return tx('tipB');
+  if(d<.7)return tx('tipC');
+  return tx('tipD');
 }
 /* decoys: colours kept at least minDist away from every colour of the picture; the closer, the more confusing */
 function makePool(cols,minDist,d){
@@ -1077,11 +1350,11 @@ const vib=ms=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
 
 /* ================= power-ups ================= */
 const POWERS={
-  reveal:{name:'הארה',desc:'10 שניות',long:'מאירה את הכדורים שהציור צריך ומעמעמת את כל השאר, ל-10 שניות.',
+  reveal:{name:tx('pw_reveal'),desc:tx('pw_reveal_d'),long:tx('pw_reveal_l'),
     icon:'<svg viewBox="0 0 48 48" aria-hidden="true"><g stroke="#ffe27a" stroke-width="3" stroke-linecap="round"><path d="M24 2.5v5M7.5 8.5L11 12M40.5 8.5L37 12M2.5 24h5M40.5 24h5"/></g><path d="M24 10.5a11.5 11.5 0 0 0-6.6 20.9c1.1.8 1.8 2 1.8 3.4V37h9.6v-2.2c0-1.4.7-2.6 1.8-3.4A11.5 11.5 0 0 0 24 10.5z" fill="#ffd54a" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><path d="M19.5 40.5h9M21.2 44.3h5.6" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M18.5 21a6.4 6.4 0 0 1 4.3-4.6" stroke="#fff" stroke-opacity=".85" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>'},
-  slow:{name:'האטה',desc:'8 שניות',long:'מקפיאה את המסלול ומאטה את כל הכדורים, ל-8 שניות.',
+  slow:{name:tx('pw_slow'),desc:tx('pw_slow_d'),long:tx('pw_slow_l'),
     icon:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 4.5h24M12 43.5h24" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M14.5 4.5c0 10 6.500 13 9.500 19.500-3 6.500-9.500 9.500-9.500 19.500h19c0-10-6.500-13-9.500-19.500 3-6.500 9.500-9.500 9.500-19.500z" fill="#d6f2ff" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/><path d="M18.500 8.500h11c-1.200 5-3.200 7-5.500 10-2.300-3-4.300-5-5.500-10z" fill="#3aa7ff"/><path d="M24 29l-6.500 10.500h13z" fill="#3aa7ff"/><circle cx="24" cy="24" r="1.700" fill="#3aa7ff"/><path d="M38 14l2.500 2.500M40.500 14L38 16.500M9 30l2 2M11 30l-2 2" stroke="#d6f2ff" stroke-width="1.800" stroke-linecap="round"/></svg>'},
-  brush:{name:'קסם',desc:'3 חלקים',long:'מטה קסמים שצובע 3 חלקים בציור בבת אחת.',
+  brush:{name:tx('pw_brush'),desc:tx('pw_brush_d'),long:tx('pw_brush_l'),
     icon:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8.500 40.500L31 18" stroke="#fff" stroke-width="5.500" stroke-linecap="round"/><path d="M8.500 40.500L19.500 29.500" stroke="#ff9bd8" stroke-width="5.500" stroke-linecap="round"/><path d="M34 5.500l2.800 6.700 6.700 2.800-6.700 2.800L34 24.500l-2.800-6.700-6.700-2.800 6.700-2.800z" fill="#ffe27a" stroke="#fff" stroke-width="1.800" stroke-linejoin="round"/><path d="M13.500 9l1.400 3.200 3.200 1.400-3.200 1.400-1.400 3.200-1.400-3.200L8.900 13.600l3.200-1.400zM39.500 30l1.200 2.800 2.800 1.200-2.800 1.200-1.200 2.800-1.200-2.800-2.800-1.200 2.800-1.200z" fill="#fff"/></svg>'}
 };
 const PKEYS=Object.keys(POWERS);
@@ -1108,7 +1381,7 @@ const NAV_ICON={
   shop:'<svg viewBox="0 0 28 28" aria-hidden="true"><path d="M5.5 10h17l-1.6 13.2a2 2 0 0 1-2 1.8H9.1a2 2 0 0 1-2-1.8z" fill="#a65cf0"/><path d="M10 10V8a4 4 0 0 1 8 0v2" fill="none" stroke="#7a3fd0" stroke-width="2.4" stroke-linecap="round"/><circle cx="14" cy="16.5" r="3.2" fill="#ffd54a" stroke="#fff" stroke-width="1.2"/></svg>'
 };
 const CHEST_BASIC=IMG('chest_basic','cs'),CHEST_PREM=IMG('chest_crystal','cs'),CHEST_BASIC_OPEN=IMG('chest_basic_open','cs'),CHEST_PREM_OPEN=IMG('chest_crystal_open','cs');
-const TIER_NAME={common:'רגיל',rare:'נדיר',epic:'אפי'};
+const TIER_NAME={common:tx('tier_common'),rare:tx('tier_rare'),epic:tx('tier_epic')};
 const SAMPLE=['#ff4d5e','#4dbbff','#2dbe6c'];
 
 /* ================= economy: coins for every clear, a diamond for three stars ================= */
@@ -1168,7 +1441,7 @@ function toast(msg){
 }
 function renderTop(bump){
   if(el.sideL&&save.profile){renderIcons();renderDock();renderProfile()}
-  el.coinCnt.textContent=save.coins.toLocaleString('he-IL');el.gemCnt.textContent=save.gems.toLocaleString('he-IL');
+  el.coinCnt.textContent=save.coins.toLocaleString(LOCALE);el.gemCnt.textContent=save.gems.toLocaleString(LOCALE);
   if(bump){const b=bump==='gem'?el.gemBtn:el.coinBtn;b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')}
 }
 
@@ -1176,15 +1449,15 @@ function renderTop(bump){
 function buyChest(kind){
   const premium=kind==='premium';
   if(SKIN_IDS.every(id=>save.skins.includes(id)))return false;
-  if(premium?save.gems<CHEST_GEMS:save.coins<CHEST_COINS){toast(premium?'אין מספיק יהלומים':'אין מספיק מטבעות');return false}
+  if(premium?save.gems<CHEST_GEMS:save.coins<CHEST_COINS){toast(tx(premium?'noGems':'noCoins'));return false}
   if(premium)save.gems-=CHEST_GEMS;else save.coins-=CHEST_COINS;
   const id=drawSkin(premium);save.skins.push(id);persist();renderTop();sfx.power();
-  openModal(`<h2>פותחים את התיבה...</h2><div class="big shake-box">${premium?CHEST_PREM:CHEST_BASIC}</div>`);
+  openModal(`<h2>${tx('opening')}</h2><div class="big shake-box">${premium?CHEST_PREM:CHEST_BASIC}</div>`);
   setTimeout(()=>{if(!el.modal.hidden&&el.mbox.querySelector('.big'))el.mbox.querySelector('.big').outerHTML=`<div class="big pop-in">${premium?CHEST_PREM_OPEN:CHEST_BASIC_OPEN}</div>`},650);
   setTimeout(()=>{
     if(el.modal.hidden)return;
     sfx.win();
-    el.mbox.innerHTML=`<h2>קיבלתם כדור חדש!</h2><div class="pop-in"><img class="skimg big" src="art/s_${id}.webp" alt="" draggable="false"></div><h2 style="font-size:24px">${SK[id].name}</h2><span class="tag" style="background:none;color:#fff;background:${{common:'#7d86b5',rare:'#2f8fe8',epic:'#a65cf0'}[SK[id].tier]}">${TIER_NAME[SK[id].tier]}</span><p>הכדור החדש מחליף את כל הכדורים במשחק, בכל הצבעים.</p><div class="row"><button class="btn primary" id="mEquip" type="button">הלבישו</button><button class="btn small" id="mClose" type="button">סגרו</button></div>`;
+    el.mbox.innerHTML=`<h2>${tx('gotBall')}</h2><div class="pop-in"><img class="skimg big" src="art/s_${id}.webp" alt="" draggable="false"></div><h2 style="font-size:24px">${SK[id].name}</h2><span class="tag" style="background:none;color:#fff;background:${{common:'#7d86b5',rare:'#2f8fe8',epic:'#a65cf0'}[SK[id].tier]}">${TIER_NAME[SK[id].tier]}</span><p>${tx('newBallNote')}</p><div class="row"><button class="btn primary" id="mEquip" type="button">${tx('equip')}</button><button class="btn small" id="mClose" type="button">${tx('closeB')}</button></div>`;
     document.getElementById('mEquip').onclick=()=>{save.skin=id;persist();sfx.click();closeModal()};
     document.getElementById('mClose').onclick=()=>{sfx.click();closeModal()};
   },1250);
@@ -1192,38 +1465,38 @@ function buyChest(kind){
 }
 function buyPower(k){
   const sh=shopState();
-  if(sh.bought[k]>=POWER_DAILY[k]){toast('הגעתם למגבלה היומית');return false}
-  if(save.coins<POWER_PRICE[k]){toast('אין מספיק מטבעות');return false}
-  if(save.inv[k]>=99){toast('המלאי מלא');return false}
+  if(sh.bought[k]>=POWER_DAILY[k]){toast(tx('dailyLimit'));return false}
+  if(save.coins<POWER_PRICE[k]){toast(tx('noCoins'));return false}
+  if(save.inv[k]>=99){toast(tx('stockFull'));return false}
   save.coins-=POWER_PRICE[k];sh.bought[k]++;save.inv[k]++;persist();sfx.power();renderTop('coin');renderShop();renderInv();
   return true;
 }
 function equipSkin(id){
-  if(!ownsSkin(id)){toast('כדור זה נמצא בתיבות, אפשר לקנות תיבה בחנות');return}
+  if(!ownsSkin(id)){toast(tx('inChests'));return}
   save.skin=id;persist();sfx.click();renderShop();renderIcons();
 }
 function renderShop(){
   el.stabs.querySelectorAll('button').forEach(b=>b.setAttribute('aria-selected',b.dataset.st===save.stab));
   const allOwned=SKIN_IDS.every(id=>save.skins.includes(id)),left=SKIN_IDS.length-save.skins.length;
-  let h=`<h2 class="ptitle">${{chests:'תיבות',skins:'הכדורים שלכם',power:'כלי עזר'}[save.stab]}</h2>`;
+  let h=`<h2 class="ptitle">${tx('shopT_'+save.stab)}</h2>`;
   if(save.stab==='chests'){
-    h+=`<p class="shop-note">${allOwned?`אספתם את כל ${SKIN_IDS.length} הכדורים!`:`נותרו ${left} כדורים לגלות מתוך ${SKIN_IDS.length}`}</p><div class="chests">
-      <div class="chest basic">${CHEST_BASIC}<div><h3>תיבת כדורים</h3><p>כדור אחד חדש, באקראי. הכדור מחליף את כל הכדורים במשחק.</p><div class="odds"><i class="t-common">רגיל 60%</i><i class="t-rare">נדיר 30%</i><i class="t-epic">אפי 10%</i></div><button class="buy${save.coins<CHEST_COINS||allOwned?' off':''}" data-chest="basic" type="button">${COIN}${CHEST_COINS}</button></div></div>
-      <div class="chest premium">${CHEST_PREM}<div><h3>תיבת קריסטל</h3><p>כדור נדיר או אפי, מובטח.</p><div class="odds"><i class="t-rare">נדיר 70%</i><i class="t-epic">אפי 30%</i></div><button class="buy gem${save.gems<CHEST_GEMS||allOwned?' off':''}" data-chest="premium" type="button">${GEM}${CHEST_GEMS}</button></div></div>
-    </div><p class="shop-note">מטבעות מקבלים על כל ניצחון, ויהלום על שלושה כוכבים.</p>`;
+    h+=`<p class="shop-note">${allOwned?tx('allCollected',{n:SKIN_IDS.length}):tx('leftToFind',{left,n:SKIN_IDS.length})}</p><div class="chests">
+      <div class="chest basic">${CHEST_BASIC}<div><h3>${tx('chestBasic')}</h3><p>${tx('chestBasicD')}</p><div class="odds"><i class="t-common">${TIER_NAME.common} 60%</i><i class="t-rare">${TIER_NAME.rare} 30%</i><i class="t-epic">${TIER_NAME.epic} 10%</i></div><button class="buy${save.coins<CHEST_COINS||allOwned?' off':''}" data-chest="basic" type="button">${COIN}${CHEST_COINS}</button></div></div>
+      <div class="chest premium">${CHEST_PREM}<div><h3>${tx('chestPrem')}</h3><p>${tx('chestPremD')}</p><div class="odds"><i class="t-rare">${TIER_NAME.rare} 70%</i><i class="t-epic">${TIER_NAME.epic} 30%</i></div><button class="buy gem${save.gems<CHEST_GEMS||allOwned?' off':''}" data-chest="premium" type="button">${GEM}${CHEST_GEMS}</button></div></div>
+    </div><p class="shop-note">${tx('earnNote')}</p>`;
   }else if(save.stab==='skins'){
-    h+=`<p class="shop-note">הכדור שתבחרו יחליף את כל הכדורים, בכל הצבעים.</p><div class="setrow"><span>תצוגה: כל הכדורים פתוחים</span><button class="btn small" data-preview type="button">${save.preview?'פועל':'כבוי'}</button></div><div class="skgrid">`;
+    h+=`<p class="shop-note">${tx('skinNote')}</p><div class="setrow"><span>${tx('previewRow')}</span><button class="btn small" data-preview type="button">${tx(save.preview?'on':'off')}</button></div><div class="skgrid">`;
     for(const id of SKIN_IDS){
       const sk=SK[id],own=ownsSkin(id);
-      h+=`<button class="sk${save.skin===id?' on':''}${own?'':' locked'}" data-sk="${id}" type="button" aria-label="${sk.name}${own?'':', נעול'}"><img class="skimg" src="art/s_${id}.webp" alt="" draggable="false"><b>${sk.name}</b><small class="t-${sk.tier}">${TIER_NAME[sk.tier]}</small>${own?(save.skin===id?'<span class="eq">נבחר</span>':''):`<span class="lock">${LOCK}</span>`}</button>`;
+      h+=`<button class="sk${save.skin===id?' on':''}${own?'':' locked'}" data-sk="${id}" type="button" aria-label="${sk.name}${own?'':', '+tx('lockedAria')}"><img class="skimg" src="art/s_${id}.webp" alt="" draggable="false"><b>${sk.name}</b><small class="t-${sk.tier}">${TIER_NAME[sk.tier]}</small>${own?(save.skin===id?'<span class="eq">'+tx('selected')+'</span>':''):`<span class="lock">${LOCK}</span>`}</button>`;
     }
     h+='</div>';
   }else{
     const sh=shopState();
-    h+=`<p class="shop-note">כמות מוגבלת בכל יום. המכסה מתחדשת בחצות.</p><div class="pitems">`;
+    h+=`<p class="shop-note">${tx('dailyNote')}</p><div class="pitems">`;
     for(const k of PKEYS){
       const left=POWER_DAILY[k]-sh.bought[k],can=left>0&&save.coins>=POWER_PRICE[k];
-      h+=`<div class="pitem ${k}"><span class="own">במלאי: ${save.inv[k]}</span><div class="pic">${POWERS[k].icon}</div><div><h3>${POWERS[k].name}</h3><p>${POWERS[k].long}</p><div class="row2"><span class="left">נותרו היום ${left} מתוך ${POWER_DAILY[k]}</span><button class="buy${can?'':' off'}" data-pw="${k}" type="button">${COIN}${POWER_PRICE[k]}</button></div></div></div>`;
+      h+=`<div class="pitem ${k}"><span class="own">${tx('inStock',{n:save.inv[k]})}</span><div class="pic">${POWERS[k].icon}</div><div><h3>${POWERS[k].name}</h3><p>${POWERS[k].long}</p><div class="row2"><span class="left">${tx('leftToday',{left,max:POWER_DAILY[k]})}</span><button class="buy${can?'':' off'}" data-pw="${k}" type="button">${COIN}${POWER_PRICE[k]}</button></div></div></div>`;
     }
     h+='</div>';
   }
@@ -1231,7 +1504,7 @@ function renderShop(){
 }
 el.shopBody.addEventListener('click',e=>{
   const c=e.target.closest('[data-chest]'),s=e.target.closest('[data-sk]'),p=e.target.closest('[data-pw]'),v=e.target.closest('[data-preview]');
-  if(v){save.preview=!save.preview;normalizeSave();persist();sfx.click();renderShop();renderIcons();toast(save.preview?'כל הכדורים פתוחים לניסיון':'חזרה לכדורים שאספתם')}
+  if(v){save.preview=!save.preview;normalizeSave();persist();sfx.click();renderShop();renderIcons();toast(tx(save.preview?'previewOn':'previewOff'))}
   else if(c)buyChest(c.dataset.chest);else if(s)equipSkin(s.dataset.sk);else if(p)buyPower(p.dataset.pw);
 });
 el.stabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;sfx.click();save.stab=b.dataset.st;persist();renderShop()});
@@ -1243,7 +1516,7 @@ function showTab(t){
   el.secHome.hidden=t!=='home';el.nav.hidden=t!=='home';
   el.hubScroll.hidden=t==='home';el.pagebar.hidden=t==='home';
   el.secLevels.hidden=t!=='levels';el.secPvp.hidden=t!=='pvp';el.secShop.hidden=t!=='shop';
-  el.pageTitle.textContent={levels:save.mode==='t'?'נגד הזמן':'שלבים',pvp:'קרב',shop:'חנות'}[t]||'';
+  el.pageTitle.textContent={levels:save.mode==='t'?tx('tabTimed'):tx('ptLevels'),pvp:tx('ptBattle'),shop:tx('shop')}[t]||'';
   setPlay();
   if(t==='shop')renderShop();else if(t==='pvp')renderPvp();else if(t==='home')renderHome();
   el.hubScroll.scrollTop=0;
@@ -1252,7 +1525,7 @@ el.backBtn.onclick=()=>{sfx.click();showTab('home')};
 /* the big green button on the home screen: play the next level */
 function setPlay(){
   const m=save.mode,nx=nextOpen(m),played=Object.keys(stk(m)).length;
-  el.playBtn.textContent=played?`${m==='t'?'שעון':'שלב'} ${nx}`:'התחילו';
+  el.playBtn.textContent=played?`${tx(m==='t'?'mClock':'mLevel')} ${nx}`:tx('startB');
   el.playBtn.onclick=()=>{sfx.click();startLevel(m,nx)};
 }
 el.coinIco.innerHTML=COIN;el.gemIco.innerHTML=GEM;
@@ -1261,21 +1534,21 @@ el.gemBtn.onclick=()=>{sfx.click();save.stab='chests';showTab('shop')};
 
 /* ================= pvp lobby ================= */
 function renderPvp(){
-  el.pvpArt.innerHTML=skinSvg(save.skin,['#ff4d5e'],84)+'<b>נגד</b>'+skinSvg(save.skin,['#4dbbff'],84);
+  el.pvpArt.innerHTML=skinSvg(save.skin,['#ff4d5e'],84)+'<b>'+tx('vs')+'</b>'+skinSvg(save.skin,['#4dbbff'],84);
   const t=save.pvp.w+save.pvp.l;
-  el.pvpStats.innerHTML=`<div><b>${save.pvp.w}</b><span>ניצחונות</span></div><div><b>${save.pvp.l}</b><span>הפסדים</span></div><div><b>${t?Math.round(save.pvp.w/t*100):0}%</b><span>אחוז ניצחון</span></div>`;
-  el.pvpReward.innerHTML=`<span>פרס על ניצחון:</span>${COIN}<span>מטבעות לפי השלב שלכם</span>`;
+  el.pvpStats.innerHTML=`<div><b>${save.pvp.w}</b><span>${tx('statWins')}</span></div><div><b>${save.pvp.l}</b><span>${tx('statLosses')}</span></div><div><b>${t?Math.round(save.pvp.w/t*100):0}%</b><span>${tx('statRate')}</span></div>`;
+  el.pvpReward.innerHTML=`<span>${tx('winPrize')}</span>${COIN}<span>${tx('prizeByLevel')}</span>`;
 }
 el.pvpBtn.onclick=()=>{sfx.click();startPvp()};
 
 /* ================= top icon bar, dock counter, profile ================= */
 const SIDEBTNS=[
-  {go:'pvp',label:'קרב',img:'i_battle',side:'L'},
-  {go:'chests',label:'תיבות',img:'chest_basic',side:'L'},
-  {go:'skins',label:'כדורים',img:'i_balls',side:'L'},
-  {go:'power',label:'כלי עזר',img:'i_potion',side:'R'},
-  {go:'levels',label:'שלבים',img:'i_levels',side:'R'},
-  {go:'timed',label:'שעון',img:'i_timer',side:'R'}
+  {go:'pvp',label:tx('nav_pvp'),img:'i_battle',side:'L'},
+  {go:'chests',label:tx('nav_chests'),img:'chest_basic',side:'L'},
+  {go:'skins',label:tx('nav_skins'),img:'i_balls',side:'L'},
+  {go:'power',label:tx('nav_power'),img:'i_potion',side:'R'},
+  {go:'levels',label:tx('nav_levels'),img:'i_levels',side:'R'},
+  {go:'timed',label:tx('nav_timed'),img:'i_timer',side:'R'}
 ];
 /* round 3D buttons on both sides of the home screen, each with a yellow ribbon */
 let homeSkin='';
@@ -1299,7 +1572,7 @@ let homeSeq=0;
 async function renderHome(){
   if(homeSkin!==save.skin)buildHomeBalls();
   const id=++homeSeq,m=save.mode,nx=nextOpen(m),def=levelDef(m,nx),st=stk(m)[nx]||0;
-  el.homeBadge.textContent=`${m==='t'?'שעון':'שלב'} ${nx}`;
+  el.homeBadge.textContent=`${tx(m==='t'?'mClock':'mLevel')} ${nx}`;
   el.homeKind.hidden=!def.kind;el.homeKind.textContent=def.kind?KIND_NAME[def.kind]:'';el.homeKind.className='kindb '+def.kind;
   el.homeStars.innerHTML=[1,2,3].map(k=>starSvg(k<=st)).join('');
   try{const p=await getPicture(def.slot);if(id===homeSeq)el.homePic.innerHTML=thumb(p.regions,st>0,def.hint+.12)}catch(e){}
@@ -1309,7 +1582,7 @@ function openSettings(){openProfile()} // settings are part of the profile pop-u
 const specialLeft=()=>{const sh=shopState();return PKEYS.reduce((n,k)=>n+Math.max(0,POWER_DAILY[k]-sh.bought[k]),0)};
 function renderDock(){
   const n=specialLeft(),tot=PKEYS.reduce((a,k)=>a+POWER_DAILY[k],0);
-  el.dockInfo.textContent=n?`נותרו ${n} פריטים מיוחדים בחנות היום`:'קניתם היום את כל הפריטים המיוחדים';
+  el.dockInfo.textContent=n?tx('dockLeft',{n}):tx('dockNone');
   el.dockInfo.classList.toggle('none',!n);
   el.dockInfo.setAttribute('data-left',n);el.dockInfo.setAttribute('data-total',tot);
 }
@@ -1324,10 +1597,11 @@ function renderProfile(){
   const p=save.profile;if(!p)return;
   let st=0;for(const m of ['c','t'])for(const v of Object.values(stk(m)))st+=v||0;
   el.profAv.style.background=p.avatar;el.profAv.innerHTML=avInner(p.pic,p.name);
-  el.profName.textContent=p.name||'שחקן';el.profStars.textContent=`★ ${st}`;
+  el.profName.textContent=pname(p.name);el.profStars.textContent=`★ ${st}`;
 }
 /* two rows: a picture (or the first letter) and a colour */
-const avatarPicker=(cur,pic,name)=>`<div class="avs" id="picPick">${AVPICS.map(k=>`<button type="button" class="avsw avpic${k===pic?' on':''}" data-pic="${k}" aria-label="תמונת פרופיל">${avInner(k,name)}</button>`).join('')}</div><div class="avs" id="avPick">${AVATARS.map(c=>`<button type="button" class="avsw${c===cur?' on':''}" data-av="${c}" style="background:${c}" aria-label="צבע"></button>`).join('')}</div>`;
+const pname=n=>(!n||n==='שחקן'||n==='Player'||n==='Игрок')?tx('player'):n;
+const avatarPicker=(cur,pic,name)=>`<div class="avs" id="picPick">${AVPICS.map(k=>`<button type="button" class="avsw avpic${k===pic?' on':''}" data-pic="${k}" aria-label="${tx('avPic')}">${avInner(k,name)}</button>`).join('')}</div><div class="avs" id="avPick">${AVATARS.map(c=>`<button type="button" class="avsw${c===cur?' on':''}" data-av="${c}" style="background:${c}" aria-label="${tx('avColor')}"></button>`).join('')}</div>`;
 function bindAvatarPicker(onPick){
   document.getElementById('avPick').addEventListener('click',e=>{const b=e.target.closest('[data-av]');if(!b)return;sfx.click();
     document.querySelectorAll('#avPick .avsw').forEach(x=>x.classList.toggle('on',x===b));onPick({av:b.dataset.av})});
@@ -1335,14 +1609,17 @@ function bindAvatarPicker(onPick){
     document.querySelectorAll('#picPick .avsw').forEach(x=>x.classList.toggle('on',x===b));onPick({pic:b.dataset.pic})});
 }
 function saveProfile(name,avatar,pic){
-  const p=save.profile;p.name=(name||'').trim().slice(0,14)||'שחקן';p.avatar=avatar||p.avatar;if(pic!==undefined&&pic!==null)p.pic=AVPICS.includes(pic)?pic:'';persist();renderProfile();
+  const p=save.profile;p.name=(name||'').trim().slice(0,14)||tx('player');p.avatar=avatar||p.avatar;if(pic!==undefined&&pic!==null)p.pic=AVPICS.includes(pic)?pic:'';persist();renderProfile();
 }
+const langRow=()=>`<div class="langrow" id="langRow">${LANGS.map(l=>`<button type="button" class="langb${l===LANG?' on':''}" data-lang="${l}">${{en:'English',ru:'Русский',he:'עברית'}[l]}</button>`).join('')}</div>`;
+const bindLang=before=>document.querySelectorAll('#langRow [data-lang]').forEach(b=>b.onclick=()=>{if(b.dataset.lang===LANG)return;if(before)before();try{localStorage.setItem('cr_lang',b.dataset.lang)}catch(e){}location.reload()});
 /* first visit: ask for a name once, the game remembers it on this device */
 function openWelcome(){
   const st={av:save.profile.avatar,pic:save.profile.pic||''};
-  openModal(`<h2>ברוכים הבאים!</h2><p>איך קוראים לך? השם נשמר במכשיר, כך שהמשחק יזכור אותך בפעם הבאה.</p>${avatarPicker(st.av,st.pic,'')}<input id="pName" class="pinput" maxlength="14" placeholder="השם שלך" autocomplete="nickname" aria-label="השם שלך"><div class="row"><button class="btn primary" id="pSave" type="button">בואו נתחיל</button></div>`);
+  openModal(`${langRow()}<h2>${tx('welcome')}</h2><p>${tx('welcomeP')}</p>${avatarPicker(st.av,st.pic,'')}<input id="pName" class="pinput" maxlength="14" placeholder="${tx('yourName')}" autocomplete="nickname" aria-label="${tx('yourName')}"><div class="row"><button class="btn primary" id="pSave" type="button">${tx('letsStart')}</button></div>`);
+  bindLang();
   bindAvatarPicker(d=>Object.assign(st,d));
-  const done=()=>{sfx.click();saveProfile(document.getElementById('pName').value,st.av,st.pic);closeModal();toast(`נעים להכיר, ${save.profile.name}`)};
+  const done=()=>{sfx.click();saveProfile(document.getElementById('pName').value,st.av,st.pic);closeModal();toast(tx('nice',{name:save.profile.name}))};
   document.getElementById('pSave').onclick=done;
   document.getElementById('pName').addEventListener('keydown',e=>{if(e.key==='Enter')done()});
 }
@@ -1350,32 +1627,34 @@ function openWelcome(){
 function openProfile(){
   const p=save.profile,st={av:p.avatar,pic:p.pic||''};let cleared=0,stars=0;
   for(const m of ['c','t'])for(const v of Object.values(stk(m))){if(v>0)cleared++;stars+=v||0}
-  const since=p.created?new Date(p.created).toLocaleDateString('he-IL'):'';
-  openModal(`<button class="mclose" id="pClose" type="button" aria-label="סגירה">✕</button>
+  const since=p.created?new Date(p.created).toLocaleDateString(LOCALE):'';
+  openModal(`<button class="mclose" id="pClose" type="button" aria-label="${tx('closeAria')}">✕</button>
     <div class="av big" id="pvAv" style="background:${st.av}">${avInner(st.pic,p.name)}</div>
-    <input id="pName" class="pinput" maxlength="14" value="${p.name.replace(/"/g,'&quot;')}" placeholder="השם שלך" aria-label="שם השחקן">
+    <input id="pName" class="pinput" maxlength="14" value="${pname(p.name).replace(/"/g,'&quot;')}" placeholder="${tx('yourName')}" aria-label="${tx('playerNameAria')}">
     ${avatarPicker(st.av,st.pic,p.name)}
-    <div class="statrow"><div><b>${cleared}</b><span>שלבים הושלמו</span></div><div><b>${stars}</b><span>כוכבים</span></div><div><b>${save.pvp.w}</b><span>ניצחונות בקרב</span></div></div>
-    <p class="shop-note">${since?`מצטרפים מ-${since}. `:''}ההתקדמות נשמרת במכשיר הזה.</p>
-    <button class="btn small gbtn" id="pGoogle" type="button" disabled>התחברות עם Google<small>בקרוב</small></button>
-    <div class="setrow"><span>הגדרות</span><button class="btn small" id="stSound" type="button"></button></div>
-    <div class="setrow"><span>הסברים</span><button class="btn small" id="stHelp" type="button">הצגה מחדש</button></div>
-    <div class="setrow"><span>גרסה ${BUILD==='dev'?'לבדיקות':BUILD}</span><button class="btn small" id="stUpd" type="button">בדיקת עדכון</button></div>
-    <div class="row"><button class="btn primary" id="pDone" type="button">שמירה</button></div>`);
+    <div class="statrow"><div><b>${cleared}</b><span>${tx('levelsDone')}</span></div><div><b>${stars}</b><span>${tx('starsW')}</span></div><div><b>${save.pvp.w}</b><span>${tx('pvpWins')}</span></div></div>
+    <p class="shop-note">${since?tx('joined',{d:since}):''}${tx('savedNote')}</p>
+    <button class="btn small gbtn" id="pGoogle" type="button" disabled>${tx('googleB')}<small>${tx('soon')}</small></button>
+    <div class="setrow"><span>${tx('settings')}</span><button class="btn small" id="stSound" type="button"></button></div>
+    <div class="setrow lang"><span>${tx('language')}</span>${langRow()}</div>
+    <div class="setrow"><span>${tx('explain')}</span><button class="btn small" id="stHelp" type="button">${tx('showAgain')}</button></div>
+    <div class="setrow"><span>${tx('versionRow',{v:BUILD==='dev'?tx('devBuild'):BUILD})}</span><button class="btn small" id="stUpd" type="button">${tx('checkUpd')}</button></div>
+    <div class="row"><button class="btn primary" id="pDone" type="button">${tx('saveB')}</button></div>`);
   const paint=()=>{const v=document.getElementById('pvAv');v.style.background=st.av;v.innerHTML=avInner(st.pic,document.getElementById('pName').value||p.name)};
   bindAvatarPicker(d=>{Object.assign(st,d);paint()});
   document.getElementById('pName').addEventListener('input',paint);
-  const upd=()=>{document.getElementById('stSound').textContent=save.sound?'צליל: פועל':'צליל: כבוי'};upd();
+  const upd=()=>{document.getElementById('stSound').textContent=tx(save.sound?'soundOn':'soundOff')};upd();
   document.getElementById('stSound').onclick=()=>{toggleSound();upd()};
   document.getElementById('stUpd').onclick=()=>checkUpdate(true);
-  document.getElementById('stHelp').onclick=()=>{save.seen={};persist();toast('ההסברים יופיעו שוב בפעם הבאה שתתחילו שלב')};
+  document.getElementById('stHelp').onclick=()=>{save.seen={};persist();toast(tx('helpAgain'))};
+  bindLang(()=>saveProfile(document.getElementById('pName').value,st.av,st.pic));
   document.getElementById('pClose').onclick=()=>{sfx.click();closeModal()};
   document.getElementById('pDone').onclick=()=>{sfx.click();saveProfile(document.getElementById('pName').value,st.av,st.pic);closeModal()};
 }
 el.profBtn.onclick=()=>{sfx.click();openProfile()};
 function startProfile(){ // called once when the game opens
   const p=save.profile;p.visits=(p.visits||0)+1;persist();renderProfile();
-  if(!p.name)openWelcome();else if(p.visits>1)toast(`ברוכים השבים, ${p.name}`);
+  if(!p.name)openWelcome();else if(p.visits>1)toast(tx('welcomeBack',{name:pname(p.name)}));
 }
 
 /* ================= menu ================= */
@@ -1396,18 +1675,18 @@ function renderMenu(){
     const s=stk(m)[n]||0,b=document.createElement('button');b.className='lv';b.type='button';
     const def=levelDef(m,n);
     if(def.kind)b.classList.add(def.kind);
-    b.setAttribute('aria-label',`שלב ${n}${def.kind?', '+KIND_NAME[def.kind]:''}${def.trapIntro?', מלכודת חדשה: '+TRAPS[def.trapIntro].name:''}, ${s} כוכבים`);
-    b.innerHTML=`<span class="thumb"><span class="img"></span><i class="num">${n}</i>${def.kind?`<i class="kindtag">${KIND_NAME[def.kind]}</i>`:''}${def.trapIntro?`<i class="traptag" style="--tc:${TRAPS[def.trapIntro].col}" title="מלכודת חדשה: ${TRAPS[def.trapIntro].name}"><svg viewBox="-9 -9 18 18" aria-hidden="true">${TRAPS[def.trapIntro].icon}</svg></i>`:''}</span><span class="stars">${[1,2,3].map(k=>starSvg(k<=s)).join('')}</span>`;
+    b.setAttribute('aria-label',tx('lvAria',{n,kind:def.kind?KIND_NAME[def.kind]:'',trap:def.trapIntro?TRAPS[def.trapIntro].name:'',s}));
+    b.innerHTML=`<span class="thumb"><span class="img"></span><i class="num">${n}</i>${def.kind?`<i class="kindtag">${KIND_NAME[def.kind]}</i>`:''}${def.trapIntro?`<i class="traptag" style="--tc:${TRAPS[def.trapIntro].col}" title="${tx('newTrapName',{name:TRAPS[def.trapIntro].name})}"><svg viewBox="-9 -9 18 18" aria-hidden="true">${TRAPS[def.trapIntro].icon}</svg></i>`:''}</span><span class="stars">${[1,2,3].map(k=>starSvg(k<=s)).join('')}</span>`;
     b.addEventListener('click',()=>{sfx.click();startLevel(m,n)});
     el.grid.appendChild(b);
     getPicture(def.slot).then(p=>{b.querySelector('.img').innerHTML=thumb(p.regions,s>0,def.hint+.05)}).catch(()=>{});
   }
   let total=0;for(let n=1;n<=tot;n++)total+=stk(m)[n]||0;
-  el.starTotal.textContent=`${total} / ${tot*3} כוכבים`;
-  el.secTitle.textContent=m==='t'?'נגד הזמן':'שלבים';
+  el.starTotal.textContent=tx('starsTotal',{a:total,b:tot*3});
+  el.secTitle.textContent=m==='t'?tx('tabTimed'):tx('ptLevels');
   el.pgLabel.textContent=`${first}–${last}`;
   el.pgPrev.disabled=pg===0;el.pgNext.disabled=pg>=pages(m)-1;
-  el.lvInfo.textContent=m==='t'?'אותם ציורים, קשה יותר, שעון צמוד ומלכודות':`${TOTAL_C} שלבים · 3 פסילות · שעון בכל שלב`;
+  el.lvInfo.textContent=m==='t'?tx('lvInfoT'):tx('lvInfoC',{n:TOTAL_C});
   setPlay();
   renderInv();renderSound();renderTop();
 }
@@ -1415,7 +1694,7 @@ function setMode(m){save.mode=m;const nx=nextOpen(m);save.page[m]=Math.floor((nx
 el.tabC.onclick=()=>{sfx.click();setMode('c')};el.tabT.onclick=()=>{sfx.click();setMode('t')};
 el.pgPrev.onclick=()=>{sfx.click();save.page[save.mode]--;persist();renderMenu()};
 el.pgNext.onclick=()=>{sfx.click();save.page[save.mode]++;persist();renderMenu()};
-function renderSound(){const t=save.sound?'צליל: פועל':'צליל: כבוי';el.soundBtn.textContent=t;el.soundBtn2.textContent=save.sound?'צליל פועל':'צליל כבוי'}
+function renderSound(){el.soundBtn.textContent=tx(save.sound?'soundOn':'soundOff');el.soundBtn2.textContent=tx(save.sound?'soundOn2':'soundOff2')}
 function toggleSound(){save.sound=!save.sound;persist();renderSound();if(save.sound)sfx.click()}
 el.soundBtn.onclick=toggleSound;el.soundBtn2.onclick=toggleSound;
 
@@ -1446,18 +1725,18 @@ async function startLevel(mode,n,opp){
   hideSheets();showScreen('game');
   // a left-over animation class would play again when the screen is shown: clear the shake and the red flash
   el.gwrap.classList.remove('shake');el.flash.classList.remove('on');
-  const L=levelDef(mode,n);if(mode==='p')L.tip='קרב מהיר! מי שמשלים את הציור קודם מנצח.';
+  const L=levelDef(mode,n);if(mode==='p')L.tip=tx('pvpTip');
   Object.assign(G,{opp:opp||null,pvp:mode==='p'&&opp?{name:opp.name,phase:opp.phase,T:L.T*opp.fac,t:0,prog:0}:null,mode,n,lvl:L,state:'loading',balls:[],lives:L.lives,maxLives:L.lives,score:0,combo:0,maxCombo:0,mistakes:0,cleared:false,sinceNeed:0,lastColor:null,t:0,fx:{reveal:0,slow:0,freeze:0,turbo:0,fog:0,lock:0},paintLog:[],sinceTrap:0,nTrap:0,trapsHit:0,trapType:null,fxSig:0,introSec:0,cd:0,cdShown:-1,nSpawn:0,nUseful:0,lastWasNeed:false,lastNeedColor:null,skin:SK[save.skin]?save.skin:'candy'});
   el.art.innerHTML='';el.chips.innerHTML='';el.track.innerHTML='';el.powers.innerHTML='';
-  el.hudTitle.textContent=`${mode==='t'?'שעון':mode==='p'?'קרב · שלב':'שלב'} ${n}${L.kind?' · '+KIND_NAME[L.kind]:''}`;el.score.textContent='';
-  el.hud.classList.toggle('pvp',!!G.pvp);el.oppRow.hidden=!G.pvp;el.oppBar.style.width='0%';el.oppName.textContent=G.pvp?opp.name+' · בוט':'';
-  el.cnLevel.textContent=mode==='p'?`קרב מול ${opp.name}`:`${mode==='t'?'נגד הזמן':'שלב'} ${n}`;el.cnBadge.hidden=!L.kind;el.cnBadge.className='kind '+L.kind;el.cnBadge.textContent=L.kind?KIND_NAME[L.kind]:'';
+  el.hudTitle.textContent=`${mode==='t'?tx('mClock'):mode==='p'?tx('hudBattle'):tx('mLevel')} ${n}${L.kind?' · '+KIND_NAME[L.kind]:''}`;el.score.textContent='';
+  el.hud.classList.toggle('pvp',!!G.pvp);el.oppRow.hidden=!G.pvp;el.oppBar.style.width='0%';el.oppName.textContent=G.pvp?opp.name+' · '+tx('botTag'):'';
+  el.cnLevel.textContent=mode==='p'?tx('vsOppTitle',{name:opp.name}):`${mode==='t'?tx('tabTimed'):tx('mLevel')} ${n}`;el.cnBadge.hidden=!L.kind;el.cnBadge.className='kind '+L.kind;el.cnBadge.textContent=L.kind?KIND_NAME[L.kind]:'';
   el.cnNum.textContent='';el.cnNum.classList.remove('pop');el.cnTip.textContent=L.tip;el.count.hidden=true;
   let pic;
   try{pic=await getPicture(L.slot)}catch(e){
     if(id!==G.loadId)return;
-    el.rNum.innerHTML='';el.rName.textContent='לא הצלחתי לטעון';el.rTip.textContent='בדקו את החיבור לאינטרנט ונסו שוב.';
-    el.goBtn.disabled=false;el.goBtn.textContent='נסו שוב';el.goBtn.onclick=()=>startLevel(mode,n,opp);openSheet(el.ready);return;
+    el.rNum.innerHTML='';el.rName.textContent=tx('loadFail');el.rTip.textContent=tx('loadFailTip');
+    el.goBtn.disabled=false;el.goBtn.textContent=tx('tryAgain');el.goBtn.onclick=()=>startLevel(mode,n,opp);openSheet(el.ready);return;
   }
   if(id!==G.loadId)return;
   G.pic=pic;L.pool=makePool([...new Set(pic.regions.map(r=>r.c))],L.minDist,L.d);
@@ -1593,7 +1872,7 @@ function setProgress(instant){
   el.bar.style.width=(p*100).toFixed(1)+'%';
 }
 function setScore(){
-  const sc=G.score?G.score.toLocaleString('he-IL')+' נק׳':'';
+  const sc=G.score?G.score.toLocaleString(LOCALE)+' '+tx('pts'):'';
   el.score.innerHTML=(G.limit>0?`<span class="clock${G.time<=10?' low':''}">${fmtTime(G.time)}</span>`:'')+sc;
 }
 
@@ -1603,8 +1882,8 @@ function buildPowers(){
   PKEYS.forEach(k=>{
     const b=document.createElement('button');b.type='button';b.className='pw';b.dataset.k=k;
     if(!powerOpen(k)){ // not open yet: a dim mark with a lock
-      b.classList.add('later');b.innerHTML=`<i></i><span class="ic">${POWERS[k].icon}</span><span class="nm">${POWERS[k].name}<small>משלב ${POWER_FROM[k]}</small></span><em>&#128274;</em>`;
-      b.setAttribute('aria-label',`${POWERS[k].name}, נפתח בשלב ${POWER_FROM[k]}`);b.addEventListener('click',()=>toast(`${POWERS[k].name} נפתח בשלב ${POWER_FROM[k]}`));el.powers.appendChild(b);return;
+      b.classList.add('later');b.innerHTML=`<i></i><span class="ic">${POWERS[k].icon}</span><span class="nm">${POWERS[k].name}<small>${tx('laterFrom',{n:POWER_FROM[k]})}</small></span><em>&#128274;</em>`;
+      b.setAttribute('aria-label',tx('unlocksAt',{name:POWERS[k].name,n:POWER_FROM[k]}));b.addEventListener('click',()=>toast(tx('unlocksAt',{name:POWERS[k].name,n:POWER_FROM[k]})));el.powers.appendChild(b);return;
     }
     b.innerHTML=`<i></i><span class="ic">${POWERS[k].icon}</span><span class="nm">${POWERS[k].name}<small>${POWERS[k].desc}</small></span><em>${save.inv[k]}</em>`;
     b.setAttribute('aria-label',`${POWERS[k].name}, ${POWERS[k].desc}`);
@@ -1879,13 +2158,14 @@ function skinSvg(sk,cols,size=64){
 }
 
 /* ---------- traps ---------- */
+for(const id in SKN)if(SK[id])SK[id].name=SKN[id][LI];
 const TRAPS={
-  ice:{col:'#4fc3f7',name:'הקפאה',icon:'<path d="M0 -6.5V6.5M-5.6 -3.2L5.6 3.2M-5.6 3.2L5.6 -3.2" stroke="#fff" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M-2 -5.5L0 -7.5L2 -5.5M-2 5.5L0 7.5L2 5.5" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>'},
-  erase:{col:'#ff6fae',name:'מחק',icon:'<g transform="rotate(-35)"><rect x="-6" y="-3.4" width="12" height="6.8" rx="1.6" fill="#fff"/><rect x="-6" y="-3.4" width="4.4" height="6.8" rx="1.6" fill="#ffb3d2"/></g>'},
-  sand:{col:'#f0a020',name:'שעון חול',icon:'<path d="M-4.2 -6.4H4.2L.6 0L4.2 6.4H-4.2L-.6 0Z" fill="#fff"/><path d="M-2.2 -5H2.2L0 -1.6Z" fill="#f0a020"/>'},
-  turbo:{col:'#ff5a3c',name:'מהירות',icon:'<path d="M1.6 -7.4L-4.6 1.2H-.4L-1.6 7.4L4.6 -1.2H.4Z" fill="#fff"/>'},
-  fog:{col:'#8b80c8',name:'ערפל',icon:'<path d="M-5.6 3.6A3.2 3.2 0 0 1 -4.4 -2.6A4.4 4.4 0 0 1 3.4 -3.4A3.4 3.4 0 0 1 5.6 3.6Z" fill="#fff"/>'},
-  lock:{col:'#6b7394',name:'מנעול',icon:'<rect x="-4.4" y="-.8" width="8.8" height="6.6" rx="1.3" fill="#fff"/><path d="M-2.6 -1V-3.6A2.6 2.6 0 0 1 2.6 -3.6V-1" fill="none" stroke="#fff" stroke-width="1.6"/>'}
+  ice:{col:'#4fc3f7',name:tx('trap_ice'),icon:'<path d="M0 -6.5V6.5M-5.6 -3.2L5.6 3.2M-5.6 3.2L5.6 -3.2" stroke="#fff" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M-2 -5.5L0 -7.5L2 -5.5M-2 5.5L0 7.5L2 5.5" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>'},
+  erase:{col:'#ff6fae',name:tx('trap_erase'),icon:'<g transform="rotate(-35)"><rect x="-6" y="-3.4" width="12" height="6.8" rx="1.6" fill="#fff"/><rect x="-6" y="-3.4" width="4.4" height="6.8" rx="1.6" fill="#ffb3d2"/></g>'},
+  sand:{col:'#f0a020',name:tx('trap_sand'),icon:'<path d="M-4.2 -6.4H4.2L.6 0L4.2 6.4H-4.2L-.6 0Z" fill="#fff"/><path d="M-2.2 -5H2.2L0 -1.6Z" fill="#f0a020"/>'},
+  turbo:{col:'#ff5a3c',name:tx('trap_turbo'),icon:'<path d="M1.6 -7.4L-4.6 1.2H-.4L-1.6 7.4L4.6 -1.2H.4Z" fill="#fff"/>'},
+  fog:{col:'#8b80c8',name:tx('trap_fog'),icon:'<path d="M-5.6 3.6A3.2 3.2 0 0 1 -4.4 -2.6A4.4 4.4 0 0 1 3.4 -3.4A3.4 3.4 0 0 1 5.6 3.6Z" fill="#fff"/>'},
+  lock:{col:'#6b7394',name:tx('trap_lock'),icon:'<rect x="-4.4" y="-.8" width="8.8" height="6.6" rx="1.3" fill="#fff"/><path d="M-2.6 -1V-3.6A2.6 2.6 0 0 1 2.6 -3.6V-1" fill="none" stroke="#fff" stroke-width="1.6"/>'}
 };
 const TRAP_KEYS=Object.keys(TRAPS);
 /* the mark: a pulsing dashed ring around the ball plus a badge with the trap's symbol */
@@ -1895,19 +2175,19 @@ function trapBanner(t,sec,hint){
   if(!bannerEl){bannerEl=document.createElement('div');bannerEl.className='trapban';bannerEl.hidden=true;el.trackwrap.appendChild(bannerEl)}
   if(!t){bannerEl.hidden=true;return}
   const T=TRAPS[t];bannerEl.hidden=false;bannerEl.style.setProperty('--tc',T.col);
-  bannerEl.innerHTML=`<svg viewBox="-12 -12 24 24" width="22" height="22" aria-hidden="true"><circle r="11" fill="${T.col}"/>${T.icon}</svg><b>${hint||{ice:'הקפאה! אי אפשר ללחוץ',turbo:'הכדורים מהירים יותר',fog:'ערפל',lock:'כלי העזר נעולים'}[t]||T.name}</b>${hint?'':`<span>${Math.ceil(sec)}</span>`}`;
+  bannerEl.innerHTML=`<svg viewBox="-12 -12 24 24" width="22" height="22" aria-hidden="true"><circle r="11" fill="${T.col}"/>${T.icon}</svg><b>${hint||(['ice','turbo','fog','lock'].includes(t)?tx('ban_'+t):T.name)}</b>${hint?'':`<span>${Math.ceil(sec)}</span>`}`;
 }
 /* a trap ball was tapped: no heart is lost, but its effect hits and the combo is gone */
 function triggerTrap(b){
   const t=b.trap,L=G.lvl,pw=L.trapPow,HL=!!window.__headless;
   b.dead=true;b.pop=true;b.fade=0;G.combo=0;G.trapsHit++;
   let msg='';
-  if(t==='ice'){G.fx.freeze=lerp(2,3.8,pw);msg='קפוא!'}
-  else if(t==='erase'){const k=unpaintParts(1+Math.floor(pw*2.2));msg=k?`נמחקו ${k} חלקים`:'אין מה למחוק'}
-  else if(t==='sand'){const sec=Math.round(lerp(4,9,pw));if(G.limit>0){G.time=Math.max(0,G.time-sec);setScore()}msg=`-${sec} שניות`}
-  else if(t==='turbo'){G.fx.turbo=lerp(4,6.5,pw);msg='מהר!'}
-  else if(t==='fog'){G.fx.fog=lerp(3.2,5.5,pw);msg='ערפל'}
-  else if(t==='lock'){G.fx.lock=lerp(6,10,pw);msg='נעול'}
+  if(t==='ice'){G.fx.freeze=lerp(2,3.8,pw);msg=tx('fx_ice')}
+  else if(t==='erase'){const k=unpaintParts(1+Math.floor(pw*2.2));msg=k?tx('fx_erased',{n:k}):tx('fx_nothing')}
+  else if(t==='sand'){const sec=Math.round(lerp(4,9,pw));if(G.limit>0){G.time=Math.max(0,G.time-sec);setScore()}msg=tx('fx_sand',{n:sec})}
+  else if(t==='turbo'){G.fx.turbo=lerp(4,6.5,pw);msg=tx('fx_turbo')}
+  else if(t==='fog'){G.fx.fog=lerp(3.2,5.5,pw);msg=tx('fx_fog')}
+  else if(t==='lock'){G.fx.lock=lerp(6,10,pw);msg=tx('fx_lock')}
   if(!HL){
     const p=toFx(ballClient(b));burst(p.x,p.y,TRAPS[t].col,12,160,3.6);floats.push({x:p.x,y:p.y-20,text:msg,life:1.3,max:1.3});
     el.gwrap.classList.remove('shake');void el.gwrap.offsetWidth;el.gwrap.classList.add('shake');
@@ -1934,7 +2214,7 @@ function refreshFx(){
   const f=G.fx,w=el.trackwrap,sig=(f.freeze>0?1:0)+(f.turbo>0?2:0)+(f.fog>0?4:0)+(f.lock>0?8:0);
   w.classList.toggle('frozen',f.freeze>0);w.classList.toggle('turbo',f.turbo>0);w.classList.toggle('fog',f.fog>0);
   const top=f.freeze>0?'ice':f.fog>0?'fog':f.turbo>0?'turbo':f.lock>0?'lock':null,hint=!top&&G.introSec>0&&G.lvl&&G.lvl.trapIntro?G.lvl.trapIntro:null;
-  trapBanner(top||hint,top?f[top==='ice'?'freeze':top]:0,hint?`מלכודת חדשה: ${TRAPS[hint].name}. אל תלחצו על כדור עם הסימן`:null);
+  trapBanner(top||hint,top?f[top==='ice'?'freeze':top]:0,hint?tx('newTrapBan',{name:TRAPS[hint].name}):null);
   if(sig+(hint?16:0)!==G.fxSig){G.fxSig=sig+(hint?16:0);el.powers.querySelectorAll('.pw').forEach(b=>b.classList.toggle('locked',f.lock>0))}
 }
 const STUB={setAttribute(){},remove(){},classList:{add(){},remove(){}},insertAdjacentHTML(){}};
@@ -2021,7 +2301,7 @@ function correct(b,info){
   if(!HL){
     burst(from.x,from.y,b.color,9,150,3.5);
     floats.push({x:from.x,y:from.y-18,text:'+'+pts,life:.9,max:.9});
-    if(G.combo>=3)floats.push({x:from.x,y:from.y-44,text:`רצף ${G.combo}`,life:.9,max:.9,small:true});
+    if(G.combo>=3)floats.push({x:from.x,y:from.y-44,text:tx('combo',{n:G.combo}),life:.9,max:.9,small:true});
   }
   orbs.push({x0:from.x,y0:from.y,x1:to.x,y1:to.y,cx:(from.x+to.x)/2+(rnd()*80-40),cy:Math.min(from.y,to.y)-70,t:0,dur:.5,wait:0,color:b.color,part,last:G.remaining===0});
   b.dead=true;b.pop=true;b.fade=0;
@@ -2045,7 +2325,7 @@ el.gwrap.addEventListener('animationend',e=>{if(e.target===el.gwrap)el.gwrap.cla
 el.flash.addEventListener('animationend',()=>el.flash.classList.remove('on'));
 function timeUp(){G.cleared=true;finish(false,'time')}
 /* ================= pvp: a race against another player, or against a bot when nobody is free ================= */
-const BOT_NAMES=['נועה','איתי','דנה','יואב','מאיה','אורי','שירה','עומר','ליאור','תמר','גיל','רותם','אלון','הילה','נדב','ספיר','אריאל','ענבר'];
+const BOT_NAMES=BOT_NAMES_L[LANG];
 const BOT_COLORS=['#ff6fae','#4dbbff','#2dbe6c','#ff8a2b','#9b5cf6','#12b5a6','#ff4d5e'];
 const pvpCoins=n=>Math.round((25+n*.6)*(n%10===0?1.5:n%5===0?1.25:1));
 /* a bot finishes the picture in `fac` times the time of flawless play: 20% fast, 50% medium, 30% slow */
@@ -2059,11 +2339,11 @@ let pvpSearch=0;
 async function startPvp(){
   const id=++pvpSearch;
   const n=Math.max(1,Math.min(TOTAL_C,nextOpen('c')+Math.floor(rnd()*7)-3));
-  openModal(`<h2>מחפשים יריב...</h2><div class="spinner"></div><p>מחפשים שחקן פנוי בשלב ${n}</p><div class="row"><button class="btn small" id="mCancel" type="button">ביטול</button></div>`);
+  openModal(`<h2>${tx('searching')}</h2><div class="spinner"></div><p>${tx('searchingP',{n})}</p><div class="row"><button class="btn small" id="mCancel" type="button">${tx('cancel')}</button></div>`);
   document.getElementById('mCancel').onclick=()=>{pvpSearch++;sfx.click();closeModal()};
   const opp=await findOpponent(n);
   if(id!==pvpSearch)return;
-  el.mbox.innerHTML=`<h2>נמצא יריב</h2><p>אין שחקנים פנויים כרגע, אז תתמודדו מול בוט.</p><div class="vs"><div class="who"><div class="avatar" style="background:#5b4bdb;font-size:22px">אני</div><span>אתם</span></div><span>נגד</span><div class="who"><div class="avatar" style="background:${opp.color}">${opp.name[0]}</div><span>${opp.name} (בוט)</span></div></div><p>שלב ${n} · פרס על ניצחון ${pvpCoins(n)} מטבעות</p>`;
+  el.mbox.innerHTML=`<h2>${tx('oppFound')}</h2><p>${tx('noFree')}</p><div class="vs"><div class="who"><div class="avatar" style="background:#5b4bdb;font-size:22px">${tx('me')}</div><span>${tx('youW')}</span></div><span>${tx('vs')}</span><div class="who"><div class="avatar" style="background:${opp.color}">${opp.name[0]}</div><span>${tx('botName',{name:opp.name})}</span></div></div><p>${tx('pvpRound',{n,c:pvpCoins(n)})}</p>`;
   setTimeout(()=>{if(id!==pvpSearch)return;el.modal.hidden=true;el.mbox.innerHTML='';startLevel('p',n,opp)},window.__headless?0:1800);
 }
 function pvpStep(dt){
@@ -2115,30 +2395,30 @@ function showEnd(win,stars,why){
   el.eStars.hidden=win&&P;
   [...el.eStars.querySelectorAll('.on')].forEach((s,i)=>s.style.animationDelay=(.15+i*.2)+'s');
   if(P){
-    el.eTitle.textContent=win?`ניצחתם את ${G.opp.name}!`:(why==='pvp'?'היריב סיים קודם':'נפסלתם');
-    el.eSub.textContent=win?'הכי מהירים. הפרס שלכם מחכה.':(why==='pvp'?'פעם הבאה תהיו מהירים יותר.':'שלוש טעויות והקרב נגמר.');
-    el.eStat.innerHTML=`<div><b>${fmtTime(G.t)}</b><span>הזמן שלכם</span></div><div><b>${Math.round((G.pvp?G.pvp.prog:0)*100)}%</b><span>ההתקדמות של ${G.opp.name}</span></div>`;
+    el.eTitle.textContent=win?tx('beatOpp',{name:G.opp.name}):tx(why==='pvp'?'oppFirst':'outW');
+    el.eSub.textContent=win?tx('fastestSub'):tx(why==='pvp'?'nextFaster':'threeMist');
+    el.eStat.innerHTML=`<div><b>${fmtTime(G.t)}</b><span>${tx('yourTime')}</span></div><div><b>${Math.round((G.pvp?G.pvp.prog:0)*100)}%</b><span>${tx('progressOf',{name:G.opp.name})}</span></div>`;
   }else{
-    el.eTitle.textContent=win?(stars===3?'ציור מושלם!':stars===2?'כל הכבוד!':'הצלחתם!'):(why==='time'?'נגמר הזמן':'נפסלתם');
-    el.eSub.textContent=win?(last?(T?'סיימתם את כל שלבי השעון.':'סיימתם את כל 200 השלבים. איזה אוסף צבעים.'):'הציור הושלם.'):(why==='time'?'השעון הקדים אתכם. נסו שוב מהר יותר.':`${G.maxLives===2?'שתי':'שלוש'} טעויות והסיבוב נגמר. הציור עדיין מחכה לכם.`);
+    el.eTitle.textContent=win?tx(stars===3?'endPerfect':stars===2?'endGreat':'endOk'):tx(why==='time'?'endTime':'endLost');
+    el.eSub.textContent=win?(last?tx(T?'finTimed':'finAll'):tx('picDone')):(why==='time'?tx('clockWon'):tx('mistakesEnd',{k:G.maxLives}));
     const B=(T?save.tbest:save.best)[G.n]||0;
-    el.eStat.innerHTML=win?`<div><b>${G.score.toLocaleString('he-IL')}</b><span>ניקוד</span></div>${T?`<div><b>${fmtTime(G.limit-G.time)}</b><span>זמן</span></div>`:`<div><b>${G.maxCombo}</b><span>רצף ארוך</span></div>`}<div><b>${B.toLocaleString('he-IL')}</b><span>שיא</span></div>`:'';
+    el.eStat.innerHTML=win?`<div><b>${G.score.toLocaleString(LOCALE)}</b><span>${tx('score')}</span></div>${T?`<div><b>${fmtTime(G.limit-G.time)}</b><span>${tx('timeW')}</span></div>`:`<div><b>${G.maxCombo}</b><span>${tx('bestCombo')}</span></div>`}<div><b>${B.toLocaleString(LOCALE)}</b><span>${tx('bestW')}</span></div>`:'';
   }
   const gn=G.gain||{coins:0,gems:0};let r='';
   if(gn.coins)r+=`<span class="rcoin">${COIN}+${gn.coins}</span>`;
   if(gn.gems)r+=`<span class="rcoin">${GEM}+${gn.gems}</span>`;
   for(const k of G.reward||[])r+=`<span class="rcoin"><span class="pwchip ${k}">${POWERS[k].icon}</span>+1</span>`;
-  if(!r&&win&&!P)r='<span class="none">כבר קיבלתם פרס על תוצאה כזו או טובה יותר</span>';
+  if(!r&&win&&!P)r='<span class="none">'+tx('alreadyPaid')+'</span>';
   el.eReward.innerHTML=r;renderTop(gn.gems?'gem':gn.coins?'coin':false);
   el.eBtns.innerHTML='';
   const mk=(txt,cls,fnc)=>{const b=document.createElement('button');b.type='button';b.className='btn '+cls;b.textContent=txt;b.onclick=()=>{sfx.click();fnc()};el.eBtns.appendChild(b)};
-  if(P){mk('קרב נוסף','primary',()=>{toMenu();startPvp()});mk('תפריט','small',toMenu)}
+  if(P){mk(tx('anotherBattle'),'primary',()=>{toMenu();startPvp()});mk(tx('menuT'),'small',toMenu)}
   else{
-    if(win&&!last)mk('לשלב הבא','primary',()=>startLevel(G.mode,G.n+1));
-    else if(!win)mk('נסו שוב','primary',()=>startLevel(G.mode,G.n));
-    else mk('לתפריט','primary',toMenu);
-    if(win)mk('שוב','small',()=>startLevel(G.mode,G.n));
-    mk('תפריט','small',toMenu);
+    if(win&&!last)mk(tx('nextLevel'),'primary',()=>startLevel(G.mode,G.n+1));
+    else if(!win)mk(tx('tryAgain'),'primary',()=>startLevel(G.mode,G.n));
+    else mk(tx('toMenu'),'primary',toMenu);
+    if(win)mk(tx('againB'),'small',()=>startLevel(G.mode,G.n));
+    mk(tx('menuT'),'small',toMenu);
   }
   openSheet(el.end,!win);
 }
@@ -2235,28 +2515,28 @@ const cChip=(c,n)=>`<span class="chip" style="--c:${c};--t:#fff;--p:0;flex:none;
 const cIcon=t=>`<svg viewBox="-12 -12 24 24" width="64" height="64"><circle r="11" fill="${TRAPS[t].col}"/>${TRAPS[t].icon}</svg>`;
 const CGRID=n=>`<span class="cgrid">${[0,1,2,3].map(i=>`<i class="${i<n?'on':''}"></i>`).join('')}</span>`;
 const TRAP_SHOW={
-  ice:{art:()=>`<span class="cfrost">${cIcon('ice')}<b>3</b></span>`,txt:'המסך קופא לכמה שניות ואי אפשר ללחוץ על שום כדור. הכדורים ממשיכים לרוץ.'},
-  erase:{art:()=>`${CGRID(3)}<span class="carrow">&#8592;</span>${CGRID(1)}`,txt:'חלקים שכבר צבעתם נמחקים מהציור, וצריך לצבוע אותם שוב.'},
-  sand:{art:()=>`<span class="cfrost">${cIcon('sand')}<b>-6</b></span>`,txt:'לחיצה עליו מורידה שניות מהשעון.'},
-  turbo:{art:()=>`<span class="cspeed">${cBall('#ff8a2b',46)}${cBall('#4dbbff',46)}${cBall('#2dbe6c',46)}</span>`,txt:'כל הכדורים מאיצים לכמה שניות, וקשה יותר לבחור.'},
-  fog:{art:()=>`<span class="cfog">${cBall('#ff8a2b',46)}${cBall('#4dbbff',46)}${cBall('#2dbe6c',46)}</span>`,txt:'הכדורים הופכים אפורים ומטושטשים לכמה שניות, וקשה לזהות צבעים.'},
-  lock:{art:()=>PKEYS.map(k=>`<span class="clockpw">${POWERS[k].icon}<em>&#128274;</em></span>`).join(''),txt:'כלי העזר ננעלים לכמה שניות.'}
+  ice:{art:()=>`<span class="cfrost">${cIcon('ice')}<b>3</b></span>`,get txt(){return tx('showIce')}},
+  erase:{art:()=>`${CGRID(3)}<span class="carrow">&#8592;</span>${CGRID(1)}`,get txt(){return tx('showErase')}},
+  sand:{art:()=>`<span class="cfrost">${cIcon('sand')}<b>-6</b></span>`,get txt(){return tx('showSand')}},
+  turbo:{art:()=>`<span class="cspeed">${cBall('#ff8a2b',46)}${cBall('#4dbbff',46)}${cBall('#2dbe6c',46)}</span>`,get txt(){return tx('showTurbo')}},
+  fog:{art:()=>`<span class="cfog">${cBall('#ff8a2b',46)}${cBall('#4dbbff',46)}${cBall('#2dbe6c',46)}</span>`,get txt(){return tx('showFog')}},
+  lock:{art:()=>PKEYS.map(k=>`<span class="clockpw">${POWERS[k].icon}<em>&#128274;</em></span>`).join(''),get txt(){return tx('showLock')}}
 };
 function coachFor(mode,n,L){
   const sl=[],seen=save.seen||(save.seen={}),add=(key,slides)=>{if(!seen[key])slides.forEach(x=>sl.push(Object.assign({key},x)))};
   if(mode==='c'&&n===1)add('intro',[
-    {t:'ברוכים הבאים!',art:cBall('#ff6fae',54)+cBall('#4dbbff',54)+cBall('#2dbe6c',54),txt:'צובעים ציור בעזרת כדורים שרצים על הדרך. כל כדור נכון צובע חלק מהציור.'},
-    {t:'לוחצים רק על הצבע הנכון',art:cChip('#4dbbff',3)+cChip('#ff8a2b',5)+'<span class="carrow">&#8592;</span>'+cBall('#4dbbff',54),txt:'העיגולים למעלה מראים אילו צבעים הציור עדיין צריך, וכמה כדורים נשארו מכל צבע. לחצו רק על כדור בצבע כזה.'},
-    {t:'טעות עולה בלב',art:`<img src="art/heart.webp" width="40" alt=""><img src="art/heart.webp" width="40" alt=""><img src="art/heart_off.webp" width="40" alt=""><span class="carrow">&#8592;</span>${cBall('#9b5cf6',54)}`,txt:'לחיצה על כדור בצבע שהציור לא צריך לוקחת לב. כשנגמרים הלבבות השלב נגמר.'},
-    {t:'השעון',art:'<span class="cclock">2:00</span>',txt:'בכל שלב יש שעון. אם הזמן נגמר לפני שהציור מוכן, אפשר לנסות שוב. יש מספיק זמן, אל תילחצו.',btn:'יאללה, מתחילים'}]);
-  if(mode==='t'&&n===1)add('clock',[{t:'נגד הזמן',art:'<span class="cclock">1:30</span>',txt:'אותם ציורים, אבל קשה יותר: שעון צמוד, רק שתי פסילות ומלכודות. כוכבים לפי המהירות.',btn:'מתחילים'}]);
-  if(mode!=='p'&&!save.devUnlock)for(const k of PKEYS)if(powerOpen(k))add('pw_'+k,[{t:'כלי עזר חדש: '+POWERS[k].name,art:`<span class="cpw">${POWERS[k].icon}</span>`,txt:POWERS[k].long+' הכפתור נמצא בצד המסך. כשנגמר המלאי אפשר לקנות עוד בחנות.'}]);
+    {t:tx('c1t'),art:cBall('#ff6fae',54)+cBall('#4dbbff',54)+cBall('#2dbe6c',54),txt:tx('c1')},
+    {t:tx('c2t'),art:cChip('#4dbbff',3)+cChip('#ff8a2b',5)+'<span class="carrow">&#8592;</span>'+cBall('#4dbbff',54),txt:tx('c2')},
+    {t:tx('c3t'),art:`<img src="art/heart.webp" width="40" alt=""><img src="art/heart.webp" width="40" alt=""><img src="art/heart_off.webp" width="40" alt=""><span class="carrow">&#8592;</span>${cBall('#9b5cf6',54)}`,txt:tx('c3')},
+    {t:tx('c4t'),art:'<span class="cclock">2:00</span>',txt:tx('c4'),btn:tx('letsGo')}]);
+  if(mode==='t'&&n===1)add('clock',[{t:tx('c5t'),art:'<span class="cclock">1:30</span>',txt:tx('c5'),btn:tx('startShort')}]);
+  if(mode!=='p'&&!save.devUnlock)for(const k of PKEYS)if(powerOpen(k))add('pw_'+k,[{t:tx('newPwT',{name:POWERS[k].name}),art:`<span class="cpw">${POWERS[k].icon}</span>`,txt:tx('newPwTxt',{long:POWERS[k].long})}]);
   const t=L.trapIntro;
   if(t&&mode!=='p'){
     if(L.trapIdx===0)add('trap_'+t,[
-      {t:'מלכודת חדשה: '+TRAPS[t].name,art:cMarked(t),txt:'כדור עם הסימן הזה הוא מלכודת. הוא לא לוקח לב, אבל יש לו אפקט. אל תלחצו עליו!'},
-      {t:'מה קורה אם לוחצים?',art:TRAP_SHOW[t].art(),txt:TRAP_SHOW[t].txt,btn:'הבנתי'}]);
-    else add('try_'+t,[{t:'נסו בעצמכם',art:cMarked(t),txt:`בשלב הזה אפשר ללחוץ פעם אחת על כדור עם הסימן (${TRAPS[t].name}) ולראות מה קורה. כאן זה לא נורא. בהמשך זה יהיה קשה יותר, אז כדאי להכיר.`,btn:'מתחילים'}]);
+      {t:tx('newTrapName',{name:TRAPS[t].name}),art:cMarked(t),txt:tx('trapMarkTxt')},
+      {t:tx('whatHappens'),art:TRAP_SHOW[t].art(),txt:TRAP_SHOW[t].txt,btn:tx('gotIt')}]);
+    else add('try_'+t,[{t:tx('tryT'),art:cMarked(t),txt:tx('tryTxt',{name:TRAPS[t].name}),btn:tx('startShort')}]);
   }
   return sl;
 }
@@ -2265,7 +2545,7 @@ function showCoach(slides,done){
   let i=0;coachRoot.hidden=false;
   const draw=()=>{
     const s=slides[i],last=i===slides.length-1;
-    coachRoot.innerHTML=`<div class="cbox" role="dialog" aria-label="הסבר"><h3>${s.t}</h3><div class="cart">${s.art||''}</div><p>${s.txt}</p><div class="cdots">${slides.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><button class="btn primary" type="button">${last?(s.btn||'הבנתי'):'הבא'}</button></div>`;
+    coachRoot.innerHTML=`<div class="cbox" role="dialog" aria-label="${tx('coachAria')}"><h3>${s.t}</h3><div class="cart">${s.art||''}</div><p>${s.txt}</p><div class="cdots">${slides.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><button class="btn primary" type="button">${last?(s.btn||tx('gotIt')):tx('nextB')}</button></div>`;
     coachRoot.querySelector('button').onclick=()=>{sfx.click();if(last){coachRoot.hidden=true;done()}else{i++;draw()}};
   };
   draw();
@@ -2305,7 +2585,7 @@ function frame(ts){
 }
 
 /* installable app: only on the real web host (not inside Claude, not in local tests) */
-const BUILD='2026-11-02.8'; // stamped by tools/release.py, must match version.json on the host
+const BUILD='2026-11-03.1'; // stamped by tools/release.py, must match version.json on the host
 const LIVE=location.protocol==='https:'&&!/claude\.ai|claudeusercontent|localhost/.test(location.hostname);
 try{if('serviceWorker' in navigator&&LIVE)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 /* over-the-air updates: the host's version.json says which build is current */
@@ -2320,14 +2600,14 @@ async function applyUpdate(){
 function showUpdateBar(){
   if(document.getElementById('updBar'))return;
   const b=document.createElement('div');b.id='updBar';b.className='updbar';
-  b.innerHTML='<span>יש גרסה חדשה של המשחק</span><button type="button" class="btn small primary">עדכון</button>';
-  b.querySelector('button').onclick=()=>{b.querySelector('span').textContent='מעדכנת…';applyUpdate()};
+  b.innerHTML='<span>'+tx('updAvail')+'</span><button type="button" class="btn small primary">'+tx('updB')+'</button>';
+  b.querySelector('button').onclick=()=>{b.querySelector('span').textContent=tx('updating');applyUpdate()};
   document.getElementById('app').appendChild(b);
 }
 async function checkUpdate(manual){
-  if(!LIVE){if(manual)toast('עדכונים עובדים רק באפליקציה המותקנת');return}
+  if(!LIVE){if(manual)toast(tx('updOnlyApp'));return}
   const v=await newerBuild();
-  if(v)showUpdateBar();else if(manual)toast(v===null?'אין חיבור לאינטרנט':'המשחק מעודכן ✓');
+  if(v)showUpdateBar();else if(manual)toast(tx(v===null?'noNet':'upToDate'));
 }
 if(LIVE){setTimeout(()=>checkUpdate(),2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setInterval(()=>checkUpdate(),15*60*1000)}
 
@@ -2337,7 +2617,7 @@ normalizeSave();renderMenu();showTab('home');showScreen('menu');startProfile();
 requestAnimationFrame(frame);
 
 // small hook for automated play-testing
-window.__cr={powerOpen,triggerTrap,unpaintParts,trapsFor,TRAP_PLAN,TRAPS,rollTrap,G,save,needed,renderTop,renderHome,goSide,openSettings,openProfile,openWelcome,saveProfile,specialLeft,renderDock,AVATARS,paintPart,coinsFor,gemsFor,pvpCoins,buyChest,buyPower,equipSkin,showTab,renderShop,openModal,closeModal,startPvp,makeBot,normalizeSave,shopState,dayStr,POWER_PRICE,POWER_DAILY,CHEST_COINS,CHEST_GEMS,SK,SKIN_IDS,skinSvg,PIC_PARTS,PIC_ORDER,usefulFrac,TRACKS,TRACK_TIERS,makeTrack,levelDef,makePool,getPicture,startLevel,tapBall,update,toMenu,usePower,POWERS,renderMenu,pauseGame,resume,nextOpen,cdist,PKEYS,persist,
+window.__cr={powerOpen,LANG,tx,STR,SKN,BOT_NAMES_L,LANGS,triggerTrap,unpaintParts,trapsFor,TRAP_PLAN,TRAPS,rollTrap,G,save,needed,renderTop,renderHome,goSide,openSettings,openProfile,openWelcome,saveProfile,specialLeft,renderDock,AVATARS,paintPart,coinsFor,gemsFor,pvpCoins,buyChest,buyPower,equipSkin,showTab,renderShop,openModal,closeModal,startPvp,makeBot,normalizeSave,shopState,dayStr,POWER_PRICE,POWER_DAILY,CHEST_COINS,CHEST_GEMS,SK,SKIN_IDS,skinSvg,PIC_PARTS,PIC_ORDER,usefulFrac,TRACKS,TRACK_TIERS,makeTrack,levelDef,makePool,getPicture,startLevel,tapBall,update,toMenu,usePower,POWERS,renderMenu,pauseGame,resume,nextOpen,cdist,PKEYS,persist,
   step(sec){for(let t=0;t<sec;t+=1/60)update(1/60)},
   skip:skipCountdown,
   bot(sec,{mistake=false}={}){
